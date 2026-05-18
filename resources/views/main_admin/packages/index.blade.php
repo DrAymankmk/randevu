@@ -2,12 +2,20 @@
 {{--@extends('includes_admin.mainlayout')--}}
 @section('content')
     <style>
-        .modal-select label {
-            z-index: 99999 !important;
+        .package-status-select label {
+            z-index: 2 !important;
         }
 
-        .select2-container--default.select2-container--open {
-            z-index: 9999 !important;
+        .package-status-select .select2-container {
+            width: 100% !important;
+        }
+
+        .bank-details .select2-container--open {
+            z-index: 1060 !important;
+        }
+
+        .bank-details .select2-dropdown {
+            z-index: 1061 !important;
         }
 
         .add-table-invoice {
@@ -64,20 +72,9 @@
                                         <div class="col">
                                             <div class="doctor-table-blk">
                                                 <h3>@lang('main.packages') ({{ count($data['packages']) }} )</h3>
-{{--                                                <div class="doctor-search-blk">--}}
-{{--                                                    <div class="top-nav-search table-search-blk">--}}
-{{--                                                        <input id="package-search" type="text"  class="form-control"--}}
-{{--                                                               placeholder="@lang('main.search_by_name')">--}}
-{{--                                                        <a class="btn"><img src="/assets/img/icons/search-normal.svg" alt=""></a>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="add-group">--}}
-{{--                                                        <a href="javascript:;" class="btn btn-primary doctor-refresh"><img src="/assets/img/icons/re-fresh.svg" alt=""></a>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
                                             </div>
                                         </div>
-                                        <div
-                                            class="col-auto text-end py-2 ms-auto download-grp add-group sm:flex-row flex-col">
+                                        <div class="col-auto text-end py-2 ms-auto download-grp add-group sm:flex-row flex-col">
                                             <a href="javascript:void(0);" data-bs-toggle="modal"
                                                data-bs-target="#add_package"
                                                class="btn btn-primary text-nowrap w-100 border"><span>@lang('main.add_new_package')</span></a>
@@ -161,7 +158,7 @@
                                                     </div>
                                                     <!-- Delete Department Modal End -->
 
-                                                    <!-- Add Department Modal -->
+                                                    <!-- Edit Package Modal -->
                                                     <div class="modal custom-modal modal-bg fade bank-details"
                                                          id="edit_package_{{$package->id}}" role="dialog">
                                                         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -176,87 +173,18 @@
                                                                     </button>
                                                                 </div>
                                                                 <div class="modal-body text-start py-4 px-3">
-                                                                    <form id="add_department_form"
-                                                                          action="{{ route('packages.update',$package->id) }}"
+                                                                    <form action="{{ route('packages.update',$package->id) }}"
                                                                           method="POST">
                                                                         @csrf
                                                                         {{ method_field('put') }}
                                                                         <div class="bank-inner-details">
-
-                                                                            <div class="row">
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group local-forms">
-                                                                                        <label>@lang('admin.name_ar')
-                                                                                            <span
-                                                                                                class="login-danger">*</span></label>
-                                                                                        <input class="form-control"
-                                                                                               placeholder="@lang('admin.name_ar')"
-                                                                                               name="name_ar"
-                                                                                               value="{{$package->name_ar}}"
-                                                                                               required>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group local-forms">
-                                                                                        <label>@lang('admin.name_en')
-                                                                                            <span
-                                                                                                class="login-danger">*</span></label>
-                                                                                        <input class="form-control"
-                                                                                               placeholder="@lang('admin.name_en')"
-                                                                                               name="name_en"
-                                                                                               value="{{$package->name_en}}"
-                                                                                               required>
-                                                                                    </div>
-                                                                                </div>
-
-
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group local-forms">
-                                                                                        <label>@lang('main.duration')
-                                                                                            <span
-                                                                                                class="login-danger">*</span></label>
-                                                                                        <input type="number" class="form-control"
-                                                                                               placeholder="@lang('main.duration')"
-                                                                                               name="duration"
-                                                                                               value="{{$package->duration}}"
-                                                                                               required>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group local-forms">
-                                                                                        <label>@lang('main.price')
-                                                                                            <span
-                                                                                                class="login-danger">*</span></label>
-                                                                                        <input type="number" class="form-control"
-                                                                                               placeholder="@lang('main.price')"
-                                                                                               name="price"
-                                                                                               value="{{$package->price}}"
-                                                                                               required>
-                                                                                    </div>
-                                                                                </div>
-
-
-                                                                                <div class="col-12">
-                                                                                    <div class="form-group local-forms modal-select">
-                                                                                        <label>@lang('admin.status') <span class="login-danger">*</span></label>
-                                                                                        <select class="form-control select" name="status">
-                                                                                            <option selected="true"
-                                                                                                    disabled="disabled">@lang('admin.select') @lang('admin.status')</option>
-                                                                                            <option value="1" @if($package->status == 1) selected @endif>@lang('admin.Active')</option>
-                                                                                            <option value="0" @if($package->status == 0) selected @endif>@lang('admin.In Active')</option>
-                                                                                        </select>
-                                                                                    </div>
-                                                                                </div>
-
-
-                                                                            </div>
-
+                                                                            @include('main_admin.packages.partials.form-fields', [
+                                                                                'package' => $package,
+                                                                                'modalKey' => 'edit-' . $package->id,
+                                                                            ])
                                                                         </div>
 
                                                                         <div class="modal-footer p-3">
-
                                                                             <div class="bank-details-btn">
                                                                                 <a href="javascript:void(0);"
                                                                                    data-bs-dismiss="modal"
@@ -269,11 +197,10 @@
                                                                         </div>
                                                                     </form>
                                                                 </div>
-
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <!-- Add Department Modal End -->
+                                                    <!-- Edit Package Modal End -->
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -284,15 +211,13 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Accounts -->
             </div>
             <!-- Table Data End -->
         </div>
         <!-- /Page Content -->
     </div>
 
-    <!-- Add Department Modal -->
+    <!-- Add Package Modal -->
     <div class="modal custom-modal modal-bg fade bank-details" id="add_package" role="dialog">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -305,86 +230,51 @@
                     </button>
                 </div>
 
-                <form id="add_package_form" action="{{ route('packages.store') }}"
-                      method="POST">
+                <form id="add_package_form" action="{{ route('packages.store') }}" method="POST">
                     @csrf
 
                     <div class="modal-body text-start py-4 px-3">
                         <div class="bank-inner-details">
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="form-group local-forms">
-                                        <label>@lang('admin.name_ar') <span class="login-danger">*</span></label>
-                                        <input class="form-control" placeholder="@lang('admin.name_ar')" name="name_ar"
-                                               value="{{old('name_ar')}}" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="form-group local-forms">
-                                        <label>@lang('admin.name_en') <span class="login-danger">*</span></label>
-                                        <input class="form-control" placeholder="@lang('admin.name_en')" name="name_en"
-                                               value="{{old('name_en')}}" required>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-12">
-                                    <div class="form-group local-forms">
-                                        <label>@lang('main.duration')
-                                            <span
-                                                class="login-danger">*</span></label>
-                                        <input type="number" class="form-control"
-                                               placeholder="@lang('main.duration')"
-                                               name="duration"
-                                               value="{{old('duration')}}"
-                                               required>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="form-group local-forms">
-                                        <label>@lang('main.price')
-                                            <span
-                                                class="login-danger">*</span></label>
-                                        <input type="number" class="form-control"
-                                               placeholder="@lang('main.price')"
-                                               name="price"
-                                               value="{{old('price')}}"
-                                               required>
-                                    </div>
-                                </div>
-
-                                <div class="col-12">
-                                    <div class="form-group local-forms modal-select">
-                                        <label>@lang('admin.status') <span class="login-danger">*</span></label>
-                                        <select class="form-control select" name="status">
-                                            <option selected="true"
-                                                    disabled="disabled">@lang('admin.select') @lang('admin.status')</option>
-                                            <option value="1">@lang('admin.Active')</option>
-                                            <option value="0">@lang('admin.In Active')</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
-
+                            @include('main_admin.packages.partials.form-fields', [
+                                'modalKey' => 'add',
+                                'package' => null,
+                            ])
                         </div>
                     </div>
                     <div class="modal-footer p-3">
-
                         <div class="bank-details-btn">
                             <a href="javascript:void(0);" data-bs-dismiss="modal" class="btn bank-cancel-btn me-2">{{ trans('admin.cancel') }}</a>
                             <button class="btn bank-save-btn" type="submit">{{ trans('admin.add') }}</button>
-
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- Add Department Modal End -->
-    <script src="{{asset('/admin/js/jquery-3.2.1.min.js')}}"></script>
+    <!-- Add Package Modal End -->
 
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        function initPackageModalSelects($modal) {
+            $modal.find('select.select').each(function () {
+                var $el = $(this);
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.select2('destroy');
+                }
+                $el.select2({
+                    minimumResultsForSearch: -1,
+                    width: '100%',
+                    dropdownParent: $modal
+                });
+            });
+        }
+
+        $(document).on('shown.bs.modal', '.bank-details', function () {
+            initPackageModalSelects($(this));
+        });
+    })();
+</script>
+@endpush

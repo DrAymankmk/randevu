@@ -2,9 +2,12 @@
 
 
 use App\Events\Notify;
+use App\Models\CmsLanguage;
 use App\Models\Language;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,7 +85,36 @@ Route::get('/changeLanguageAdmin/{lang}', function ($lang) {
 //     return view('welcome');
 // });
 
-Route::get('/', 'RegisterController@index')->name('/');
+// Route::get('/', 'RegisterController@index')->name('/');
+
+Route::group(['namespace' => 'Frontend', 'middleware' => 'setlocale' , 'as' => 'frontend.'], function () {
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/about', 'AboutController@index')->name('about');
+    Route::get('/services', 'ServiceController@index')->name('services');
+    Route::get('/faq', 'FaqController@index')->name('faq');
+    Route::get('/subscription', 'SubscriptionController@index')->name('subscription');
+    Route::post('/subscription/register', 'SubscriptionController@registerClinic')->name('subscription.register');
+	Route::get('/contact', 'ContactController@index')->name('contact');
+    Route::post('/book-demo', 'ContactController@bookDemo')->name('book_demo');
+ Route::get('language/{lang}', function (string $lang) {
+        $codes = Language::query()->where('status', 1)->pluck('code')->all();
+        if ($codes === [] && Schema::hasTable('cms_languages')) {
+            $codes = CmsLanguage::query()->active()->ordered()->pluck('code')->all();
+        }
+        if ($codes === []) {
+            $codes = array_values(array_unique(array_filter([
+                (string) config('app.locale'),
+                (string) config('app.fallback_locale', 'en'),
+            ])));
+        }
+        $lang = in_array($lang, $codes, true) ? $lang : ($codes[0] ?? 'en');
+        session(['lang' => $lang]);
+        App::setLocale($lang);
+
+        return redirect()->back();
+    })->name('language.switch');
+});
+
 Route::post('register', 'RegisterController@register')->name('register');
 
 
@@ -99,6 +131,70 @@ Route::group(['namespace' => 'AdminPanel', 'prefix' => 'admin'], function () {
 
 
 Route::group(["middleware" => ["auth", "setlocale"], 'prefix' => 'admin', 'namespace' => 'AdminPanel'], function () {
+
+// cms routes
+Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function () {
+    Route::get('pages', 'CmsPageController@index')->name('pages.index');
+    Route::get('pages/data', 'CmsPageController@data')->name('pages.data');
+    Route::get('pages/create', 'CmsPageController@create')->name('pages.create');
+    Route::get('pages/builder/create', 'CmsPageBuilderController@create')->name('pages.builder.create');
+    Route::post('pages/builder', 'CmsPageBuilderController@store')->name('pages.builder.store');
+    Route::post('pages', 'CmsPageController@store')->name('pages.store');
+    Route::get('pages/{id}/builder', 'CmsPageBuilderController@edit')->name('pages.builder.edit');
+    Route::put('pages/{id}/builder', 'CmsPageBuilderController@update')->name('pages.builder.update');
+    Route::get('pages/{id}', 'CmsPageController@show')->name('pages.show');
+    Route::get('pages/{id}/edit', 'CmsPageController@edit')->name('pages.edit');
+    Route::put('pages/{id}', 'CmsPageController@update')->name('pages.update');
+});
+
+// cms sections
+Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function () {
+    Route::get('sections', 'CmsSectionController@index')->name('sections.index');
+    Route::get('sections/data', 'CmsSectionController@data')->name('sections.data');
+    Route::get('sections/create', 'CmsSectionController@create')->name('sections.create');
+    Route::post('sections', 'CmsSectionController@store')->name('sections.store');
+    Route::get('sections/{id}', 'CmsSectionController@show')->name('sections.show');
+    Route::get('sections/{id}/edit', 'CmsSectionController@edit')->name('sections.edit');
+    Route::put('sections/{id}', 'CmsSectionController@update')->name('sections.update');
+});
+
+
+// cms items
+Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function () {
+    Route::get('items', 'CmsItemController@index')->name('items.index');
+    Route::get('items/data', 'CmsItemController@data')->name('items.data');
+    Route::get('items/create', 'CmsItemController@create')->name('items.create');
+    Route::post('items', 'CmsItemController@store')->name('items.store');
+    Route::get('items/{id}', 'CmsItemController@show')->name('items.show');
+    Route::get('items/{id}/edit', 'CmsItemController@edit')->name('items.edit');
+    Route::put('items/{id}', 'CmsItemController@update')->name('items.update');
+});
+
+// cms media
+Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function () {
+    Route::get('media', 'MediaController@index')->name('media.index');
+    Route::get('media/data', 'MediaController@data')->name('media.data');
+    Route::get('media/collections', 'MediaController@getCollections')->name('media.collections');
+    Route::post('media/bulk-delete', 'MediaController@bulkDestroy')->name('media.bulk-delete');
+    Route::get('media/create', 'MediaController@create')->name('media.create');
+    Route::post('media', 'MediaController@store')->name('media.store');
+    Route::put('media/{id}', 'MediaController@update')->name('media.update');
+    Route::delete('media/{id}', 'MediaController@destroy')->name('media.destroy');
+});
+
+// cms links
+Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function () {
+    Route::get('links', 'CmsLinkController@index')->name('links.index');
+    Route::get('links/data', 'CmsLinkController@data')->name('links.data');
+    Route::get('links/create', 'CmsLinkController@create')->name('links.create');
+    Route::post('links', 'CmsLinkController@store')->name('links.store');
+    Route::get('links/{id}', 'CmsLinkController@show')->name('links.show');
+    Route::get('links/{id}/edit', 'CmsLinkController@edit')->name('links.edit');
+    Route::put('links/{id}', 'CmsLinkController@update')->name('links.update');
+    Route::delete('links/{id}', 'CmsLinkController@destroy')->name('links.destroy');
+    Route::post('links/{id}/toggle-status', 'CmsLinkController@toggleStatus')->name('links.toggleStatus');
+});
+
 
     Route::group(['namespace' => 'Pharmacy', 'prefix' => 'pharmacy'], function () {
 
@@ -632,6 +728,8 @@ Route::group(["middleware" => ["auth", "setlocale"], 'prefix' => 'admin', 'names
 
         Route::resource('reports', 'ReportController');
         Route::resource('packages', 'PackagesController');
+        Route::resource('demo-requests', 'DemoRequestController');
+        Route::resource('notification-recipients', 'NotificationRecipientController')->except(['show', 'create', 'edit']);
         Route::resource('permissionsTypes', 'PermissionsTypesController');
 
         Route::get('points-list', 'PointsController@index')->name('points-list');

@@ -248,6 +248,7 @@ return [
     'answer' => 'الإجابة',
     'cancel' => 'إلغاء',
     'Active' => 'مفعل',
+    'InActive' => 'غير مفعل',
     'In Active' => 'غير مفعل',
     'confirm_delete' => 'هل تريد بالتأكيد الحذف ؟',
     'confirm_cancel' => 'هل تريد بالتأكيد إلغاء ؟',

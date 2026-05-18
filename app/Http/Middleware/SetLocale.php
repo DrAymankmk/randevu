@@ -4,8 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Auth;
-
 
 class SetLocale
 {
@@ -18,18 +16,20 @@ class SetLocale
      */
     public function handle($request, Closure $next)
     {
+        $default = (string) config('app.locale', 'en');
+        $sessionLang = Session::get('lang');
 
-        if(Session::has('lang')){
-            app()->setLocale(Session::get('lang'));
-        }else{
-            $lang = 'en';
-//            if(Auth::user()){
-//                if(!is_null(Auth::user()->lang)){
-//                    $lang = Auth::user()->lang;
-//                }
-//            }
+        if ($sessionLang !== null && $sessionLang !== '') {
+            $lang = strtolower(trim((string) $sessionLang));
+            $allowed = config('app.locales');
+            if (is_array($allowed) && $allowed !== [] && ! in_array($lang, $allowed, true)) {
+                $lang = $default;
+            }
             app()->setLocale($lang);
+        } else {
+            app()->setLocale($default);
         }
+
         return $next($request);
     }
 }

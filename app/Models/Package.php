@@ -9,7 +9,18 @@ class Package extends Model
 {
     use HasFactory;
 
-    public $fillable = ['name_en', 'name_ar','duration','price','status'];
+    public $fillable = [
+        'name_en',
+        'name_ar',
+        'features_en',
+        'features_ar',
+        'duration',
+        'price',
+        'discount',
+        'price_after_discount',
+        'free_months',
+        'status',
+    ];
 
 
     function subscriptions_package_users()

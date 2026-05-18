@@ -12,9 +12,9 @@ class Clinic extends Authenticatable
 {
     use HasFactory,HasRoles;
     protected $fillable = [
-        'name', 'email', 'password', 'phone', 'image', 'qr_code', 'status', 'app_type', 'parent_id', 'city_id', 'lat', 'lng', 'address',
-        'gender', 'date_created','package_end_date', 'communication_officer','communication_officer_phone', 'specialization', 'firebase_token', 'platform', 'device_token', 'jwt_token', 'info', 'degree_id', 'ID_Number'
-        ,'is_manager','nursing_point_id','notes','role_id'
+        'name', 'email', 'password', 'phone', 'alternative_phone', 'image', 'qr_code', 'status', 'app_type', 'parent_id', 'city_id', 'lat', 'lng', 'address',
+        'gender', 'date_created', 'package_end_date', 'communication_officer', 'communication_officer_phone', 'admin_email', 'specialization', 'firebase_token', 'platform', 'device_token', 'jwt_token', 'info', 'degree_id', 'ID_Number', 'license_number', 'medical_commercial_license',
+        'is_manager', 'nursing_point_id', 'notes', 'role_id',
     ];
 
 

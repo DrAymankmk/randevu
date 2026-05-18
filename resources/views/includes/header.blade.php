@@ -185,54 +185,40 @@
                             <ul class="sidebar-menu">
                                 <li><a class="sidebar-header" href="{{ route('admin.dashboard') }}"><i
                                             data-feather="home"></i>&nbsp;<span>@lang('admin.dashboard')</span></a></li>
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('profile_view'))
                                     <li><a class="sidebar-header" href="{{ route('profile') }}"><i
                                                 data-feather="database"></i>&nbsp;<span>@lang('admin.Manage facility data')</span></a>
                                     </li>
-                                @endif
 
                                     <li><a class="sidebar-header" href="{{ route('admin.doctors.ratings') }}"><i data-feather="file-plus"></i>&nbsp;<span>@lang('admin.doctors_ratings')</span></a>
                                     </li>
 
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('department_view'))
 
                                     <li><a class="sidebar-header" href="{{ route('departments') }}"><i
                                                 data-feather="settings"></i>&nbsp;<span>@lang('admin.Add departments')</span></a>
                                     </li>
-                                @endif
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('offers_view'))
 
                                     <li><a class="sidebar-header" href="{{ route('offers') }}"><i
                                                 data-feather="tag"></i>&nbsp;<span>@lang('admin.Manage Offers')</span></a>
                                     </li>
-                                @endif
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('specialties_view'))
 
                                     <li><a class="sidebar-header" href="{{ route('specialties') }}"><i
                                                 data-feather="settings"></i>&nbsp;<span>@lang('admin.Manage available specialties')</span></a>
                                     </li>
-                                @endif
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('branches_view'))
-
+                               
                                     @if(\Illuminate\Support\Facades\Auth::user()->app_type != 7)
                                         <li><a class="sidebar-header" href="{{ route('branches') }}"><i
                                                     data-feather="settings"></i>&nbsp;<span>@lang('admin.Manage Branch')</span></a>
                                         </li>
                                     @endif
-                                @endif
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('supervisors_view'))
 
                                     <li><a class="sidebar-header" href="{{ route('supervisor') }}"><i
                                                 data-feather="file"></i>&nbsp;<span>@lang('admin.SuperVisor Management')</span></a>
                                     </li>
-                                @endif
 
-                                @if (auth()->user()->app_type != 6 || auth()->user()->hasPermissionTo('complaint_view'))
 
                                     <li><a class="sidebar-header" href="{{ route('contactUs') }}"><i
                                                 data-feather="message-circle"></i>&nbsp;<span>@lang('admin.Complaints Box')</span></a>
                                     </li>
-                                @endif
                                 <li><a class="sidebar-header" href="{{ route('change-password') }}"><i
                                             data-feather="edit"></i>&nbsp;<span>@lang('admin.Change Password')</span></a>
                                 </li>
