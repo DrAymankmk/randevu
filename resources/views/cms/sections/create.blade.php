@@ -1,17 +1,17 @@
 @extends('layout_new.mainlayout')
 
 @section('content')
-    <div  class="page-wrapper" style="padding:10px">
+<div class="page-wrapper" style="padding:10px">
 	<!-- Page Title -->
 	<div class="row">
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
 					<a href="{{ route('cms.sections.index') }}" class="btn btn-secondary">
-						<i class="mdi mdi-arrow-left"></i> {{ __('Back') }}
+						<i class="mdi mdi-arrow-left"></i> {{ __('cms.back') }}
 					</a>
 				</div>
-				<h4 class="page-title">{{ __('Create Section') }}</h4>
+				<h4 class="page-title">{{ __('cms.create_section') }}</h4>
 			</div>
 		</div>
 	</div>
@@ -24,7 +24,8 @@
 			<div class="col-lg-8">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Translations') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.translations') }}
+						</h5>
 					</div>
 					<div class="card-body">
 						<!-- Language Tabs -->
@@ -50,7 +51,7 @@
 								role="tabpanel">
 
 								<div class="mb-3">
-									<label class="form-label">{{ __('Title') }}
+									<label class="form-label">{{ __('cms.title') }}
 										({{ $lang->name }})</label>
 									<input type="text"
 										class="form-control"
@@ -60,7 +61,7 @@
 								</div>
 
 								<div class="mb-3">
-									<label class="form-label">{{ __('Subtitle') }}
+									<label class="form-label">{{ __('cms.subtitle') }}
 										({{ $lang->name }})</label>
 									<input type="text"
 										class="form-control"
@@ -75,15 +76,19 @@
 								$lang->code,
 								'inputName' => 'translations[' .
 								$lang->code . '][description]',
-								'label' => __('Description') . ' (' . $lang->name . ')',
-								'value' => old('translations.'.$lang->code.'.description'),
+								'label' => __('cms.description') . ' ('
+								.
+								$lang->name . ')',
+								'value' =>
+								old('translations.'.$lang->code.'.description'),
 								'direction' => $lang->direction,
-								'placeholder' => __('Enter description...')
+								'placeholder' =>
+								__('cms.enter_description')
 								])
 
 								<!-- Image Upload Fields for this Language -->
 								<hr class="my-3">
-								<h6 class="mb-3">{{ __('Images') }}
+								<h6 class="mb-3">{{ __('cms.images') }}
 									({{ $lang->name }})</h6>
 
 								@include('components.image-upload',
@@ -93,7 +98,7 @@
 								'inputName' => 'translations[' .
 								$lang->code . '][image]',
 								'collection' => 'images_' . $lang->code,
-								'label' => __('Main Image'),
+								'label' => __('cms.main_image'),
 								'existingImage' => null
 								])
 							</div>
@@ -109,16 +114,18 @@
 			<div class="col-lg-4">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Section Settings') }}
+						<h5 class="card-title mb-0">{{ __('cms.section_settings') }}
 						</h5>
 					</div>
 					<div class="card-body">
 						<div class="mb-3">
-							<label class="form-label">{{ __('Page') }} <span
+							<label class="form-label">{{ __('cms.page') }}
+								<span
 									class="text-danger">*</span></label>
 							<select class="form-select @error('cms_page_id') is-invalid @enderror"
 								name="cms_page_id" required>
-								<option value="">{{ __('Select Page') }}
+								<option value="">
+									{{ __('cms.select_page') }}
 								</option>
 								@foreach($pages as $page)
 								<option value="{{ $page->id }}"
@@ -133,7 +140,7 @@
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">{{ __('Internal Name') }}
+							<label class="form-label">{{ __('cms.internal_name') }}
 								<span
 									class="text-danger">*</span></label>
 							<input type="text"
@@ -146,33 +153,38 @@
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">{{ __('Type') }} <span
+							<label class="form-label">{{ __('cms.type') }}
+								<span
 									class="text-danger">*</span></label>
 							<select class="form-select @error('type') is-invalid @enderror"
 								name="type" required>
 								<option value="default"
 									{{ old('type') == 'default' ? 'selected' : '' }}>
-									{{ __('Default') }}</option>
+									{{ __('cms.default') }}
+								</option>
 								<option value="hero"
 									{{ old('type') == 'hero' ? 'selected' : '' }}>
-									{{ __('Hero') }}</option>
+									{{ __('cms.hero') }}</option>
 								<option value="gallery"
 									{{ old('type') == 'gallery' ? 'selected' : '' }}>
-									{{ __('Gallery') }}</option>
+									{{ __('cms.gallery') }}
+								</option>
 								<option value="testimonial"
 									{{ old('type') == 'testimonial' ? 'selected' : '' }}>
-									{{ __('Testimonial') }}
+									{{ __('cms.testimonial') }}
 								</option>
 								<option value="features"
 									{{ old('type') == 'features' ? 'selected' : '' }}>
-									{{ __('Features') }}</option>
+									{{ __('cms.features') }}
+								</option>
 								<option value="cta"
 									{{ old('type') == 'cta' ? 'selected' : '' }}>
-									{{ __('Call to Action') }}
+									{{ __('cms.call_to_action') }}
 								</option>
 								<option value="content"
 									{{ old('type') == 'content' ? 'selected' : '' }}>
-									{{ __('Content') }}</option>
+									{{ __('cms.content') }}
+								</option>
 							</select>
 							@error('type')
 							<div class="invalid-feedback">{{ $message }}</div>
@@ -181,18 +193,18 @@
 
 						<div class="mb-3">
 							<label
-								class="form-label">{{ __('Template') }}</label>
+								class="form-label">{{ __('cms.template') }}</label>
 							<input type="text" class="form-control"
 								name="template"
 								value="{{ old('template') }}"
 								placeholder="sections.hero">
 							<small
-								class="text-muted">{{ __('Blade template name') }}</small>
+								class="text-muted">{{ __('cms.blade_template_name') }}</small>
 						</div>
 
 						<div class="mb-3">
 							<label
-								class="form-label">{{ __('Order') }}</label>
+								class="form-label">{{ __('cms.order') }}</label>
 							<input type="number" class="form-control"
 								name="order"
 								value="{{ old('order', 0) }}">
@@ -206,14 +218,14 @@
 									id="is_active" value="1"
 									{{ old('is_active', true) ? 'checked' : '' }}>
 								<label class="form-check-label"
-									for="is_active">{{ __('Active') }}</label>
+									for="is_active">{{ __('cms.active') }}</label>
 							</div>
 						</div>
 
 						<div class="d-grid">
 							<button type="submit" class="btn btn-primary">
 								<i class="mdi mdi-content-save"></i>
-								{{ __('Save Section') }}
+								{{ __('cms.save_section') }}
 							</button>
 						</div>
 					</div>
@@ -225,14 +237,14 @@
 		<div class="col-lg-12 mt-3">
 			<div class="card">
 				<div class="card-header">
-					<h5 class="card-title mb-0">{{ __('Gallery') }}</h5>
+					<h5 class="card-title mb-0">{{ __('cms.gallery') }}</h5>
 				</div>
 				<div class="card-body">
 					@include('components.gallery-upload', [
 					'inputId' => 'section_gallery',
 					'inputName' => 'gallery',
 					'collection' => 'gallery',
-					'label' => __('Gallery Images'),
+					'label' => __('cms.gallery_images'),
 					'existingImages' => collect([])
 					])
 				</div>

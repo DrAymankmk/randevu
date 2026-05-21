@@ -6,6 +6,7 @@ use App\Events\SystemNotifications\DemoRequested;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\CmsPage;
+use App\Models\ContactUs;
 use App\Models\DemoRequest;
 class ContactController extends Controller
 {
@@ -59,5 +60,29 @@ class ContactController extends Controller
         event(new DemoRequested($demoRequest));
 
         return redirect()->back()->with('book_demo_submitted', __('main.book_demo_success'));
+    }
+
+    public function submitContact(Request $request)
+    {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'number' => 'required|string|max:50',
+            'message' => 'required|string|max:5000',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator, 'contactForm')->withInput();
+        }
+
+        ContactUs::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('number'),
+            'message' => $request->input('message'),
+            'is_read' => false,
+        ]);
+
+        return redirect()->back()->with('contact_us_submitted', __('main.contact_us_submitted'));
     }
 }

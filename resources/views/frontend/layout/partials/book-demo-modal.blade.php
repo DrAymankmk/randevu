@@ -14,7 +14,21 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endif
 
-<div class="modal fade" id="bookDemoModal" tabindex="-1" aria-labelledby="bookDemoModalLabel" aria-hidden="true">
+<style>
+	#bookDemoModal.book-demo-modal-top {
+		z-index: 10000010 !important;
+	}
+
+	#bookDemoModal.book-demo-modal-top .modal-dialog {
+		z-index: 10000011 !important;
+	}
+
+	body.book-demo-modal-open .modal-backdrop {
+		z-index: 10000009 !important;
+	}
+</style>
+
+<div class="modal fade book-demo-modal-top" id="bookDemoModal" tabindex="-1" aria-labelledby="bookDemoModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header border-0 pb-0">
@@ -83,13 +97,23 @@ document.addEventListener('DOMContentLoaded', function() {
 	</div>
 </div>
 
-@if ($errors->getBag('bookDemo')->isNotEmpty())
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 	var modal = document.getElementById('bookDemoModal');
-	if (modal && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-		new bootstrap.Modal(modal).show();
+	if (!modal || typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+		return;
 	}
+
+	modal.addEventListener('show.bs.modal', function() {
+		document.body.classList.add('book-demo-modal-open');
+	});
+
+	modal.addEventListener('hidden.bs.modal', function() {
+		document.body.classList.remove('book-demo-modal-open');
+	});
+
+	@if ($errors->getBag('bookDemo')->isNotEmpty())
+		new bootstrap.Modal(modal).show();
+	@endif
 });
 </script>
-@endif

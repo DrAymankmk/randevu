@@ -1,17 +1,17 @@
 @extends('layout_new.mainlayout')
 
 @section('content')
-    <div  class="page-wrapper" style="padding:10px">
+<div class="page-wrapper" style="padding:10px">
 	<!-- Page Title -->
 	<div class="row">
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
 					<a href="{{ route('cms.items.index') }}" class="btn btn-secondary">
-						<i class="mdi mdi-arrow-left"></i> {{ __('Back') }}
+						<i class="mdi mdi-arrow-left"></i> {{ __('cms.back') }}
 					</a>
 				</div>
-				<h4 class="page-title">{{ __('Edit Item') }}</h4>
+				<h4 class="page-title">{{ __('cms.edit_item') }}</h4>
 			</div>
 		</div>
 	</div>
@@ -25,7 +25,8 @@
 			<div class="col-lg-8">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Translations') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.translations') }}
+						</h5>
 					</div>
 					<div class="card-body">
 						<!-- Language Tabs -->
@@ -57,7 +58,7 @@
 
 								<div class="mb-3">
 									<label class="form-label">
-										{{ __('Title') }}
+										{{ __('cms.title') }}
 										({{ $lang->name }})
 										<span
 											class="text-danger">*</span>
@@ -74,7 +75,7 @@
 								</div>
 
 								<div class="mb-3">
-									<label class="form-label">{{ __('Subtitle') }}
+									<label class="form-label">{{ __('cms.sub_title') }}
 										({{ $lang->name }})</label>
 									<input type="text"
 										class="form-control"
@@ -89,13 +90,13 @@
 								$lang->code,
 								'inputName' => 'translations[' .
 								$lang->code . '][content]',
-								'label' => __('Content') . ' (' .
+								'label' => __('cms.content') . ' (' .
 								$lang->name . ')',
 								'value' =>
 								old('translations.'.$lang->code.'.content',
 								$translation->content ?? ''),
 								'direction' => $lang->direction,
-								'placeholder' => __('Enter content...')
+								'placeholder' => __('cms.enter_content')
 								])
 
 								<div class="mb-3">
@@ -115,7 +116,7 @@
 
 								<!-- Image Upload Fields for this Language -->
 								<hr class="my-3">
-								<h6 class="mb-3">{{ __('Images') }}
+								<h6 class="mb-3">{{ __('cms.images') }}
 									({{ $lang->name }})</h6>
 
 								@include('components.image-upload',
@@ -125,7 +126,7 @@
 								'inputName' => 'translations[' .
 								$lang->code . '][image]',
 								'collection' => 'images_' . $lang->code,
-								'label' => __('Main Image'),
+								'label' => __('cms.main_image'),
 								'existingImage' =>
 								$item->getFirstMediaUrl('images_' .
 								$lang->code)
@@ -137,7 +138,7 @@
 								'inputName' => 'translations[' .
 								$lang->code . '][icon_image]',
 								'collection' => 'icons_' . $lang->code,
-								'label' => __('Icon Image'),
+								'label' => __('cms.icon_image'),
 								'existingImage' =>
 								$item->getFirstMediaUrl('icons_' .
 								$lang->code)
@@ -153,11 +154,13 @@
 			<div class="col-lg-4">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Item Settings') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.item_settings') }}
+						</h5>
 					</div>
 					<div class="card-body">
 						<div class="mb-3">
-							<label class="form-label">{{ __('Slug') }}</label>
+							<label
+								class="form-label">{{ __('cms.slug') }}</label>
 							<input type="text"
 								class="form-control @error('slug') is-invalid @enderror"
 								name="slug"
@@ -168,12 +171,12 @@
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">{{ __('Section') }}
+							<label class="form-label">{{ __('cms.section') }}
 							</label>
 							<select class="form-select @error('cms_section_id') is-invalid @enderror"
 								name="cms_section_id">
 								<option value="">
-									{{ __('Select Section') }}
+									{{ __('cms.select_section') }}
 								</option>
 								@foreach($sections as $section)
 								<option value="{{ $section->id }}"
@@ -190,7 +193,7 @@
 
 						<div class="mb-3">
 							<label
-								class="form-label">{{ __('Order') }}</label>
+								class="form-label">{{ __('cms.order') }}</label>
 							<input type="number" class="form-control"
 								name="order"
 								value="{{ old('order', $item->order) }}">
@@ -204,14 +207,14 @@
 									id="is_active" value="1"
 									{{ old('is_active', $item->is_active) ? 'checked' : '' }}>
 								<label class="form-check-label"
-									for="is_active">{{ __('Active') }}</label>
+									for="is_active">{{ __('cms.active') }}</label>
 							</div>
 						</div>
 
 						<div class="d-grid">
 							<button type="submit" class="btn btn-primary">
 								<i class="mdi mdi-content-save"></i>
-								{{ __('Update Item') }}
+								{{ __('cms.update_item') }}
 							</button>
 						</div>
 					</div>
@@ -220,14 +223,14 @@
 				<!-- Item Info -->
 				<div class="card mt-3">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Item Info') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.item_info') }}</h5>
 					</div>
 					<div class="card-body">
-						<p class="mb-1"><strong>{{ __('Section') }}:</strong>
+						<p class="mb-1"><strong>{{ __('cms.section') }}:</strong>
 							{{ $item->section->name ?? '-' }}</p>
-						<p class="mb-1"><strong>{{ __('Created') }}:</strong>
+						<p class="mb-1"><strong>{{ __('cms.created') }}:</strong>
 							{{ $item->created_at->format('Y-m-d H:i') }}</p>
-						<p class="mb-0"><strong>{{ __('Updated') }}:</strong>
+						<p class="mb-0"><strong>{{ __('cms.updated') }}:</strong>
 							{{ $item->updated_at->format('Y-m-d H:i') }}</p>
 					</div>
 				</div>
@@ -239,14 +242,14 @@
 		<div class="col-lg-12 mt-3">
 			<div class="card">
 				<div class="card-header">
-					<h5 class="card-title mb-0">{{ __('Gallery') }}</h5>
+					<h5 class="card-title mb-0">{{ __('cms.gallery') }}</h5>
 				</div>
 				<div class="card-body">
 					@include('components.gallery-upload', [
 					'inputId' => 'item_gallery',
 					'inputName' => 'gallery',
 					'collection' => 'gallery',
-					'label' => __('Gallery Images'),
+					'label' => __('cms.gallery_images'),
 					'existingImages' => $item->getMedia('gallery')
 					])
 				</div>

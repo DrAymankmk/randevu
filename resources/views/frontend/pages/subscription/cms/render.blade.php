@@ -5,7 +5,6 @@
     $typeToView = [
         'subscription' => $subscriptionFormView,
         'checkout' => $subscriptionFormView,
-        'about-us' => $subscriptionFormView,
         'default' => 'frontend.pages.subscription.cms.types.generic',
     ];
     $partial = $typeToView[$type] ?? 'frontend.pages.subscription.cms.types.generic';

@@ -1373,6 +1373,15 @@
 					class="{{ Request::is('demo-requests*') ? 'active' : '' }}">@lang('main.demo-request')</a>
 			</li>
 			<li>
+				<a href="{{ route('contact-us.index') }}"
+					class="{{ Request::is('contact-us*') ? 'active' : '' }}">
+					@lang('main.contact_us')
+					@if(($unreadContactUsCount ?? 0) > 0)
+						<span class="badge bg-danger rounded-pill ms-2">{{ $unreadContactUsCount }}</span>
+					@endif
+				</a>
+			</li>
+			<li>
 				<a href="{{ route('notification-recipients.index') }}"
 					class="{{ Request::is('notification-recipients*') ? 'active' : '' }}">@lang('main.notification_recipients')</a>
 			</li>

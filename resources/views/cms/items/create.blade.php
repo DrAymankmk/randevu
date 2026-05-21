@@ -1,17 +1,17 @@
 @extends('layout_new.mainlayout')
 
 @section('content')
-    <div  class="page-wrapper" style="padding:10px">
+<div class="page-wrapper" style="padding:10px">
 	<!-- Page Title -->
 	<div class="row">
 		<div class="col-12">
 			<div class="page-title-box">
 				<div class="page-title-right">
 					<a href="{{ route('cms.items.index') }}" class="btn btn-secondary">
-						<i class="mdi mdi-arrow-left"></i> {{ __('Back') }}
+						<i class="mdi mdi-arrow-left"></i> {{ __('cms.back') }}
 					</a>
 				</div>
-				<h4 class="page-title">{{ __('Create Item') }}</h4>
+				<h4 class="page-title">{{ __('cms.create_item') }}</h4>
 			</div>
 		</div>
 	</div>
@@ -24,7 +24,8 @@
 			<div class="col-lg-8">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Translations') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.translations') }}
+						</h5>
 					</div>
 					<div class="card-body">
 						<!-- Language Tabs -->
@@ -51,7 +52,7 @@
 
 								<div class="mb-3">
 									<label class="form-label">
-										{{ __('Title') }}
+										{{ __('cms.title') }}
 										({{ $lang->name }})
 										<span
 											class="text-danger">*</span>
@@ -68,7 +69,7 @@
 								</div>
 
 								<div class="mb-3">
-									<label class="form-label">{{ __('Subtitle') }}
+									<label class="form-label">{{ __('cms.sub_title') }}
 										({{ $lang->name }})</label>
 									<input type="text"
 										class="form-control"
@@ -83,16 +84,16 @@
 								$lang->code,
 								'inputName' => 'translations[' .
 								$lang->code . '][content]',
-								'label' => __('Content') . ' (' .
+								'label' => __('cms.content') . ' (' .
 								$lang->name . ')',
 								'value' =>
 								old('translations.'.$lang->code.'.content'),
 								'direction' => $lang->direction,
-								'placeholder' => __('Enter content...')
+								'placeholder' => __('cms.enter_content')
 								])
 
 								<div class="mb-3">
-									<label class="form-label">{{ __('Icon') }}
+									<label class="form-label">{{ __('cms.icon') }}
 										({{ $lang->name }})</label>
 									@include('components.icon-picker',
 									[
@@ -107,7 +108,7 @@
 
 								<!-- Image Upload Fields for this Language -->
 								<hr class="my-3">
-								<h6 class="mb-3">{{ __('Images') }}
+								<h6 class="mb-3">{{ __('cms.images') }}
 									({{ $lang->name }})</h6>
 
 								@include('components.image-upload',
@@ -117,7 +118,7 @@
 								'inputName' => 'translations[' .
 								$lang->code . '][image]',
 								'collection' => 'images_' . $lang->code,
-								'label' => __('Main Image'),
+								'label' => __('cms.main_image'),
 								'existingImage' => null
 								])
 
@@ -127,7 +128,7 @@
 								'inputName' => 'translations[' .
 								$lang->code . '][icon_image]',
 								'collection' => 'icons_' . $lang->code,
-								'label' => __('Icon Image'),
+								'label' => __('cms.icon_image'),
 								'existingImage' => null
 								])
 							</div>
@@ -142,29 +143,30 @@
 			<div class="col-lg-4">
 				<div class="card">
 					<div class="card-header">
-						<h5 class="card-title mb-0">{{ __('Item Settings') }}</h5>
+						<h5 class="card-title mb-0">{{ __('cms.item_settings') }}
+						</h5>
 					</div>
 					<div class="card-body">
 						<div class="mb-3">
-							<label class="form-label">{{ __('Slug') }}
-								<span class="text-danger">*</span></label>
+							<label class="form-label">{{ __('cms.slug') }}
+								<span
+									class="text-danger">*</span></label>
 							<input type="text"
 								class="form-control @error('slug') is-invalid @enderror"
-								name="slug"
-								value="{{ old('slug') }}">
+								name="slug" value="{{ old('slug') }}">
 							@error('slug')
 							<div class="invalid-feedback">{{ $message }}</div>
 							@enderror
 						</div>
 
 						<div class="mb-3">
-							<label class="form-label">{{ __('Section') }}
+							<label class="form-label">{{ __('cms.section') }}
 								<span
 									class="text-danger">*</span></label>
 							<select class="form-select @error('cms_section_id') is-invalid @enderror"
 								name="cms_section_id">
 								<option value="">
-									{{ __('Select Section') }}
+									{{ __('cms.select_section') }}
 								</option>
 								@foreach($sections as $section)
 								<option value="{{ $section->id }}"
@@ -181,7 +183,7 @@
 
 						<div class="mb-3">
 							<label
-								class="form-label">{{ __('Order') }}</label>
+								class="form-label">{{ __('cms.order') }}</label>
 							<input type="number" class="form-control"
 								name="order"
 								value="{{ old('order', 0) }}">
@@ -195,14 +197,14 @@
 									id="is_active" value="1"
 									{{ old('is_active', true) ? 'checked' : '' }}>
 								<label class="form-check-label"
-									for="is_active">{{ __('Active') }}</label>
+									for="is_active">{{ __('cms.active') }}</label>
 							</div>
 						</div>
 
 						<div class="d-grid">
 							<button type="submit" class="btn btn-primary">
 								<i class="mdi mdi-content-save"></i>
-								{{ __('Save Item') }}
+								{{ __('cms.save_item') }}
 							</button>
 						</div>
 					</div>
@@ -213,14 +215,14 @@
 		<div class="col-lg-12 mt-3">
 			<div class="card">
 				<div class="card-header">
-					<h5 class="card-title mb-0">{{ __('Gallery') }}</h5>
+					<h5 class="card-title mb-0">{{ __('cms.gallery') }}</h5>
 				</div>
 				<div class="card-body">
 					@include('components.gallery-upload', [
 					'inputId' => 'item_gallery',
 					'inputName' => 'gallery',
 					'collection' => 'gallery',
-					'label' => __('Gallery Images'),
+					'label' => __('cms.gallery_images'),
 					'existingImages' => collect([])
 					])
 				</div>
@@ -230,4 +232,3 @@
 	</form>
 </div>
 @endsection
-

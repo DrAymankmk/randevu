@@ -96,6 +96,7 @@ Route::group(['namespace' => 'Frontend', 'middleware' => 'setlocale' , 'as' => '
     Route::post('/subscription/register', 'SubscriptionController@registerClinic')->name('subscription.register');
 	Route::get('/contact', 'ContactController@index')->name('contact');
     Route::post('/book-demo', 'ContactController@bookDemo')->name('book_demo');
+    Route::post('/contact', 'ContactController@submitContact')->name('contact.submit');
  Route::get('language/{lang}', function (string $lang) {
         $codes = Language::query()->where('status', 1)->pluck('code')->all();
         if ($codes === [] && Schema::hasTable('cms_languages')) {
@@ -729,6 +730,8 @@ Route::group(['namespace' => 'CMS', 'prefix' => 'cms', 'as' => 'cms.'], function
         Route::resource('reports', 'ReportController');
         Route::resource('packages', 'PackagesController');
         Route::resource('demo-requests', 'DemoRequestController');
+        Route::get('contact-us', 'ContactUsMessageController@index')->name('contact-us.index');
+        Route::patch('contact-us/{contactUs}/mark-read', 'ContactUsMessageController@markAsRead')->name('contact-us.mark-read');
         Route::resource('notification-recipients', 'NotificationRecipientController')->except(['show', 'create', 'edit']);
         Route::resource('permissionsTypes', 'PermissionsTypesController');
 

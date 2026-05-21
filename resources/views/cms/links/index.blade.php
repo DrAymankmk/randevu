@@ -7,11 +7,11 @@
 		<div class="col-12">
 			<div class="page-title-box"
 				style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-				<h4 class="page-title">{{ __('Links') }}</h4>
+				<h4 class="page-title">{{ __('cms.links') }}</h4>
 				<div class="page-title-right">
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#linkModal">
-						<i class="mdi mdi-plus"></i> {{ __('Add Link') }}
+						<i class="mdi mdi-plus"></i> {{ __('cms.add_link') }}
 					</button>
 				</div>
 			</div>
@@ -26,15 +26,15 @@
 					<table id="links-table" class="table dt-responsive nowrap w-100">
 						<thead>
 							<tr>
-								<th>{{ __('ID') }}</th>
-								<th>{{ __('Name') }}</th>
-								<th>{{ __('Link') }}</th>
-								<th>{{ __('Attached To') }}</th>
-								<th>{{ __('Type') }}</th>
-								<th>{{ __('Target') }}</th>
-								<th>{{ __('Status') }}</th>
-								<th>{{ __('Order') }}</th>
-								<th>{{ __('Actions') }}</th>
+								<th>{{ __('cms.id') }}</th>
+								<th>{{ __('cms.name') }}</th>
+								<th>{{ __('cms.link') }}</th>
+								<th>{{ __('cms.attached_to') }}</th>
+								<th>{{ __('cms.type') }}</th>
+								<th>{{ __('cms.target') }}</th>
+								<th>{{ __('cms.status') }}</th>
+								<th>{{ __('cms.order') }}</th>
+								<th>{{ __('cms.actions') }}</th>
 							</tr>
 						</thead>
 						<tbody></tbody>
@@ -50,7 +50,7 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="linkModalLabel">{{ __('Add Link') }}</h5>
+				<h5 class="modal-title" id="linkModalLabel">{{ __('cms.add_link') }}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
@@ -61,22 +61,25 @@
 					<div class="row">
 						<div class="col-md-6 mb-3">
 							<label for="linkable_type"
-								class="form-label">{{ __('Attach To') }}
+								class="form-label">{{ __('cms.attach_to') }}
 								<span
 									class="text-danger">*</span></label>
 							<select class="form-select" id="linkable_type"
 								name="linkable_type" required>
-								<option value="page">{{ __('Page') }}
+								<option value="page">
+									{{ __('cms.page') }}
 								</option>
 								<option value="section">
-									{{ __('Section') }}</option>
-								<option value="item">{{ __('Item') }}
+									{{ __('cms.section') }}
+								</option>
+								<option value="item">
+									{{ __('cms.item') }}
 								</option>
 							</select>
 						</div>
 						<div class="col-md-6 mb-3">
 							<label for="linkable_id"
-								class="form-label">{{ __('Select') }}
+								class="form-label">{{ __('cms.select') }}
 								<span
 									class="text-danger">*</span></label>
 							<select class="form-select" id="linkable_id"
@@ -88,7 +91,7 @@
 					<div class="row">
 						<div class="col-md-6 mb-3">
 							<label for="name"
-								class="form-label">{{ __('Name') }}
+								class="form-label">{{ __('cms.name') }}
 								<span
 									class="text-danger">*</span></label>
 							<input type="text" class="form-control" id="name"
@@ -98,7 +101,7 @@
 						</div>
 						<div class="col-md-6 mb-3">
 							<label for="link"
-								class="form-label">{{ __('URL') }}</label>
+								class="form-label">{{ __('cms.url') }}</label>
 							<input type="text" class="form-control" id="link"
 								name="link"
 								placeholder="https://example.com">
@@ -107,7 +110,7 @@
 					<div class="row">
 						<div class="col-md-4 mb-3">
 							<label for="link_icon"
-								class="form-label">{{ __('Icon') }}</label>
+								class="form-label">{{ __('cms.icon') }}</label>
 							@include('components.icon-picker', [
 							'inputId' => 'link_icon',
 							'inputName' => 'icon',
@@ -116,22 +119,22 @@
 						</div>
 						<div class="col-md-4 mb-3">
 							<label for="target"
-								class="form-label">{{ __('Target') }}
+								class="form-label">{{ __('cms.target') }}
 								<span
 									class="text-danger">*</span></label>
 							<select class="form-select" id="target"
 								name="target" required>
 								<option value="_self">
-									{{ __('Same Window') }}
+									{{ __('cms.same_window') }}
 								</option>
 								<option value="_blank">
-									{{ __('New Window') }}
+									{{ __('cms.new_window') }}
 								</option>
 							</select>
 						</div>
 						<div class="col-md-4 mb-3">
 							<label for="type"
-								class="form-label">{{ __('Type') }}</label>
+								class="form-label">{{ __('cms.type') }}</label>
 							<input type="text" class="form-control" id="type"
 								name="type"
 								placeholder="primary, social, etc.">
@@ -140,7 +143,7 @@
 					<div class="row">
 						<div class="col-md-6 mb-3">
 							<label for="order"
-								class="form-label">{{ __('Order') }}</label>
+								class="form-label">{{ __('cms.order') }}</label>
 							<input type="number" class="form-control"
 								id="order" name="order" value="0">
 						</div>
@@ -150,14 +153,14 @@
 									type="checkbox" id="is_active"
 									name="is_active" checked>
 								<label class="form-check-label"
-									for="is_active">{{ __('Active') }}</label>
+									for="is_active">{{ __('cms.active') }}</label>
 							</div>
 						</div>
 					</div>
 
 					<!-- Translation Tabs -->
 					<hr>
-					<h6>{{ __('Translations') }}</h6>
+					<h6>{{ __('cms.translations') }}</h6>
 					<ul class="nav nav-tabs" id="translationTabs" role="tablist">
 						@foreach($languages as $index => $lang)
 						<li class="nav-item" role="presentation">
@@ -178,7 +181,7 @@
 							id="trans-content-{{ $lang->code }}"
 							role="tabpanel">
 							<div class="mb-3">
-								<label class="form-label">{{ __('Translated Name') }}
+								<label class="form-label">{{ __('cms.translated_name') }}
 									({{ $lang->name }})</label>
 								<input type="text"
 									class="form-control translation-name"
@@ -192,9 +195,9 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+						data-bs-dismiss="modal">{{ __('cms.cancel') }}</button>
 					<button type="submit" class="btn btn-primary"
-						id="saveBtn">{{ __('Save') }}</button>
+						id="saveBtn">{{ __('cms.save') }}</button>
 				</div>
 			</form>
 		</div>
@@ -368,7 +371,7 @@ $(document).ready(function() {
 	$('#linkModal').on('hidden.bs.modal', function() {
 		$('#linkForm')[0].reset();
 		$('#link_id').val('');
-		$('#linkModalLabel').text('{{ __("Add Link") }}');
+		$('#linkModalLabel').text('{{ __("cms.add_link") }}');
 		$('.is-invalid').removeClass('is-invalid');
 		$('#is_active').prop('checked', true);
 		populateLinkableDropdown('page');
@@ -427,7 +430,7 @@ $(document).ready(function() {
 						.reload();
 					Swal.fire({
 						icon: 'success',
-						title: '{{ __("Success") }}',
+						title: '{{ __("cms.success") }}',
 						text: response
 							.message,
 						timer: 2000,
@@ -460,10 +463,10 @@ $(document).ready(function() {
 				} else {
 					Swal.fire({
 						icon: 'error',
-						title: '{{ __("Error") }}',
+						title: '{{ __("cms.error") }}',
 						text: xhr.responseJSON
 							.message ||
-							'{{ __("An error occurred") }}'
+							'{{ __("cms.an_error_occurred") }}'
 					});
 				}
 			}
@@ -536,7 +539,7 @@ $(document).ready(function() {
 
 				$('#linkModalLabel')
 					.text(
-						'{{ __("Edit Link") }}'
+						'{{ __("cms.edit_link") }}'
 					);
 				$('#linkModal')
 					.modal(
@@ -551,14 +554,14 @@ $(document).ready(function() {
 		var id = $(this).data('id');
 
 		Swal.fire({
-			title: '{{ __("Are you sure?") }}',
-			text: '{{ __("This action cannot be undone!") }}',
+			title: '{{ __("cms.are_you_sure") }}',
+			text: '{{ __("cms.this_action_cannot_be_undone") }}',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
-			confirmButtonText: '{{ __("Yes, delete it!") }}',
-			cancelButtonText: '{{ __("Cancel") }}'
+			confirmButtonText: '{{ __("cms.yes_delete_it") }}',
+			cancelButtonText: '{{ __("cms.cancel") }}'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
@@ -578,7 +581,7 @@ $(document).ready(function() {
 								.reload();
 							Swal.fire({
 								icon: 'success',
-								title: '{{ __("Deleted!") }}',
+								title: '{{ __("cms.deleted") }}',
 								text: response
 									.message,
 								timer: 2000,
@@ -591,10 +594,10 @@ $(document).ready(function() {
 					) {
 						Swal.fire({
 							icon: 'error',
-							title: '{{ __("Error") }}',
+							title: '{{ __("cms.error") }}',
 							text: xhr.responseJSON
 								.message ||
-								'{{ __("An error occurred") }}'
+								'{{ __("cms.an_error_occurred") }}'
 						});
 					}
 				});
@@ -620,7 +623,7 @@ $(document).ready(function() {
 				) {
 					Swal.fire({
 						icon: 'success',
-						title: '{{ __("Success") }}',
+						title: '{{ __("cms.success") }}',
 						text: response
 							.message,
 						timer: 1500,
@@ -633,10 +636,10 @@ $(document).ready(function() {
 					.reload();
 				Swal.fire({
 					icon: 'error',
-					title: '{{ __("Error") }}',
+					title: '{{ __("cms.error") }}',
 					text: xhr.responseJSON
 						.message ||
-						'{{ __("An error occurred") }}'
+						'{{ __("cms.an_error_occurred") }}'
 				});
 			}
 		});

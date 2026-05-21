@@ -9,14 +9,15 @@
 				<div class="page-title-right">
 					<button type="button" class="btn btn-primary" data-bs-toggle="modal"
 						data-bs-target="#uploadMediaModal">
-						<i class="mdi mdi-upload"></i> {{ __('Upload Media') }}
+						<i class="mdi mdi-upload"></i> {{ __('cms.upload_media') }}
 					</button>
 					<button type="button" class="btn btn-danger" id="bulkDeleteBtn"
 						style="display: none;">
-						<i class="mdi mdi-delete"></i> {{ __('Delete Selected') }}
+						<i class="mdi mdi-delete"></i>
+						{{ __('cms.delete_selected') }}
 					</button>
 				</div>
-				<h4 class="page-title">{{ __('Media Library') }}</h4>
+				<h4 class="page-title">{{ __('cms.media_library') }}</h4>
 			</div>
 		</div>
 	</div>
@@ -36,34 +37,40 @@
 					<div class="row g-3">
 						<div class="col-md-3">
 							<label
-								class="form-label">{{ __('Collection') }}</label>
+								class="form-label">{{ __('cms.collection') }}</label>
 							<select class="form-select" id="filterCollection">
 								<option value="">
-									{{ __('All Collections') }}
+									{{ __('cms.all_collections') }}
 								</option>
 							</select>
 						</div>
 						<div class="col-md-3">
-							<label class="form-label">{{ __('Type') }}</label>
+							<label
+								class="form-label">{{ __('cms.type') }}</label>
 							<select class="form-select" id="filterType">
-								<option value="">{{ __('All Types') }}
+								<option value="">
+									{{ __('cms.all_types') }}
 								</option>
-								<option value="image">{{ __('Images') }}
+								<option value="image">
+									{{ __('cms.images') }}
 								</option>
-								<option value="video">{{ __('Videos') }}
+								<option value="video">
+									{{ __('cms.videos') }}
 								</option>
-								<option value="audio">{{ __('Audio') }}
+								<option value="audio">
+									{{ __('cms.audio') }}
 								</option>
 								<option value="application">
-									{{ __('Documents') }}</option>
+									{{ __('cms.documents') }}
+								</option>
 							</select>
 						</div>
 						<div class="col-md-6">
 							<label
-								class="form-label">{{ __('Search') }}</label>
+								class="form-label">{{ __('cms.search') }}</label>
 							<input type="text" class="form-control"
 								id="searchInput"
-								placeholder="{{ __('Search by name, filename, or type...') }}">
+								placeholder="{{ __('cms.search_by_name_filename_or_type') }}">
 						</div>
 					</div>
 				</div>
@@ -87,20 +94,22 @@
 											class="form-check-input">
 									</th>
 									<th width="80">
-										{{ __('Preview') }}
+										{{ __('cms.preview') }}
 									</th>
 									<th width="80">
-										{{ __('Name') }}
+										{{ __('cms.name') }}
 									</th>
 									<th width="80">
-										{{ __('File Name') }}
+										{{ __('cms.file_name') }}
 									</th>
-									<th>{{ __('Type') }}</th>
-									<th>{{ __('Size') }}</th>
-									<th>{{ __('Collection') }}
+									<th>{{ __('cms.type') }}</th>
+									<th>{{ __('cms.size') }}</th>
+									<th>{{ __('cms.collection') }}
 									</th>
-									<th>{{ __('Uploaded') }}</th>
-									<th>{{ __('Actions') }}</th>
+									<th>{{ __('cms.uploaded') }}
+									</th>
+									<th>{{ __('cms.actions') }}
+									</th>
 								</tr>
 							</thead>
 							<tbody></tbody>
@@ -120,33 +129,33 @@
 				@csrf
 				<div class="modal-header">
 					<h5 class="modal-title" id="uploadMediaModalLabel">
-						{{ __('Upload Media') }}</h5>
+						{{ __('cms.upload_media') }}</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
 					<div class="mb-3">
-						<label class="form-label">{{ __('Files') }} <span
+						<label class="form-label">{{ __('cms.files') }} <span
 								class="text-danger">*</span></label>
 						<input type="file" class="form-control" name="files[]"
 							id="mediaFiles" multiple required>
 						<small
-							class="text-muted">{{ __('You can select multiple files. Max size: 10MB per file.') }}</small>
+							class="text-muted">{{ __('cms.you_can_select_multiple_files_max_size_10mb_per_file') }}</small>
 					</div>
 					<div class="mb-3">
-						<label class="form-label">{{ __('Collection') }}</label>
+						<label class="form-label">{{ __('cms.collection') }}</label>
 						<input type="text" class="form-control" name="collection"
-							placeholder="{{ __('default') }}">
+							placeholder="{{ __('cms.default') }}">
 						<small
-							class="text-muted">{{ __('Optional: Assign to a collection') }}</small>
+							class="text-muted">{{ __('cms.optional_assign_to_a_collection') }}</small>
 					</div>
 					<div id="uploadPreview" class="row g-2"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+						data-bs-dismiss="modal">{{ __('cms.cancel') }}</button>
 					<button type="submit" class="btn btn-primary">
-						<i class="mdi mdi-upload"></i> {{ __('Upload') }}
+						<i class="mdi mdi-upload"></i> {{ __('cms.upload') }}
 					</button>
 				</div>
 			</form>
@@ -163,14 +172,15 @@
 				@method('PUT')
 				<div class="modal-header">
 					<h5 class="modal-title" id="editMediaModalLabel">
-						{{ __('Edit Media') }}</h5>
+						{{ __('cms.edit_media') }}</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"
 						aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
 					<!-- Current Media Preview -->
 					<div class="mb-3">
-						<label class="form-label">{{ __('Current Media') }}</label>
+						<label
+							class="form-label">{{ __('cms.current_media') }}</label>
 						<div id="currentMediaPreview"
 							class="text-center p-3 border rounded">
 							<!-- Preview will be inserted here -->
@@ -180,15 +190,15 @@
 					<!-- Replace Media File -->
 					<div class="mb-3">
 						<label
-							class="form-label">{{ __('Replace Media File') }}</label>
+							class="form-label">{{ __('cms.replace_media_file') }}</label>
 						<input type="file" class="form-control" name="file"
 							id="editMediaFile" accept="*/*">
 						<small
-							class="text-muted">{{ __('Leave empty to keep current file. Max size: 10MB') }}</small>
+							class="text-muted">{{ __('cms.leave_empty_to_keep_current_file_max_size_10mb') }}</small>
 						<div id="newFilePreview" class="mt-2"
 							style="display: none;">
 							<label
-								class="form-label">{{ __('New File Preview') }}</label>
+								class="form-label">{{ __('cms.new_file_preview') }}</label>
 							<div class="text-center p-2 border rounded">
 								<!-- New file preview will be inserted here -->
 							</div>
@@ -196,12 +206,12 @@
 					</div>
 
 					<div class="mb-3">
-						<label class="form-label">{{ __('Name') }}</label>
+						<label class="form-label">{{ __('cms.name') }}</label>
 						<input type="text" class="form-control" name="name"
 							id="editMediaName">
 					</div>
 					<div class="mb-3">
-						<label class="form-label">{{ __('Collection') }}</label>
+						<label class="form-label">{{ __('cms.collection') }}</label>
 						<input type="text" class="form-control"
 							name="collection_name" id="editMediaCollection">
 					</div>
@@ -211,9 +221,9 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+						data-bs-dismiss="modal">{{ __('cms.cancel') }}</button>
 					<button type="submit"
-						class="btn btn-primary">{{ __('Update') }}</button>
+						class="btn btn-primary">{{ __('cms.update') }}</button>
 				</div>
 			</form>
 		</div>
@@ -294,7 +304,7 @@ $(document).ready(function() {
 					row) {
 					return `
                         <div class="btn-group">
-                            <a href="${row.url}" target="_blank" class="btn btn-sm btn-info" title="{{ __('View') }}">
+                            <a href="${row.url}" target="_blank" class="btn btn-sm btn-info" title="{{ __('cms.view') }}">
                                 <i class="mdi mdi-eye"></i>
                             </a>
                             <button type="button" class="btn btn-sm btn-primary edit-media"
@@ -306,10 +316,10 @@ $(document).ready(function() {
                                     data-file-name="${row.file_name}"
                                     data-model-type="${row.model_type}"
                                     data-model-id="${row.model_id}"
-                                    title="{{ __('Edit') }}">
+                                    title="{{ __('cms.edit') }}">
                                 <i class="mdi mdi-pencil"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-danger delete-media" data-id="${data}" title="{{ __('Delete') }}">
+                            <button type="button" class="btn btn-sm btn-danger delete-media" data-id="${data}" title="{{ __('cms.delete') }}">
                                 <i class="mdi mdi-delete"></i>
                             </button>
                         </div>
@@ -398,7 +408,7 @@ $(document).ready(function() {
 						.reload();
 					Swal.fire({
 						icon: 'success',
-						title: '{{ __("Success") }}',
+						title: '{{ __("cms.success") }}',
 						text: response
 							.message
 					});
@@ -407,10 +417,10 @@ $(document).ready(function() {
 			error: function(xhr) {
 				Swal.fire({
 					icon: 'error',
-					title: '{{ __("Error") }}',
+					title: '{{ __("cms.error") }}',
 					text: xhr.responseJSON
 						?.message ||
-						'{{ __("An error occurred") }}'
+						'{{ __("cms.an_error_occurred") }}'
 				});
 			}
 		});
@@ -553,7 +563,7 @@ $(document).ready(function() {
 					); // false = don't reset pagination
 					Swal.fire({
 						icon: 'success',
-						title: '{{ __("Success") }}',
+						title: '{{ __("cms.success") }}',
 						text: response
 							.message
 					});
@@ -562,10 +572,10 @@ $(document).ready(function() {
 			error: function(xhr) {
 				Swal.fire({
 					icon: 'error',
-					title: '{{ __("Error") }}',
+					title: '{{ __("cms.error") }}',
 					text: xhr.responseJSON
 						?.message ||
-						'{{ __("An error occurred") }}'
+						'{{ __("cms.an_error_occurred") }}'
 				});
 			}
 		});
@@ -576,13 +586,13 @@ $(document).ready(function() {
 		const id = $(this).data('id');
 
 		Swal.fire({
-			title: '{{ __("Are you sure?") }}',
-			text: '{{ __("You wont be able to revert this!") }}',
+			title: '{{ __("cms.are_you_sure") }}',
+			text: '{{ __("cms.you_wont_be_able_to_revert_this") }}',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
-			confirmButtonText: '{{ __("Yes, delete it!") }}'
+			confirmButtonText: '{{ __("cms.yes_delete_it") }}'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
@@ -602,7 +612,7 @@ $(document).ready(function() {
 								.reload();
 							Swal.fire({
 								icon: 'success',
-								title: '{{ __("Deleted!") }}',
+								title: '{{ __("cms.deleted") }}',
 								text: response
 									.message
 							});
@@ -613,10 +623,10 @@ $(document).ready(function() {
 					) {
 						Swal.fire({
 							icon: 'error',
-							title: '{{ __("Error") }}',
+							title: '{{ __("cms.error") }}',
 							text: xhr.responseJSON
 								?.message ||
-								'{{ __("An error occurred") }}'
+								'{{ __("cms.an_error_occurred") }}'
 						});
 					}
 				});
@@ -631,15 +641,15 @@ $(document).ready(function() {
 		}).get();
 
 		Swal.fire({
-			title: '{{ __("Are you sure?") }}',
-			text: '{{ __("You are about to delete") }} ' +
+			title: '{{ __("cms.are_you_sure") }}',
+			text: '{{ __("cms.you_are_about_to_delete") }} ' +
 				ids.length +
-				' {{ __("media files") }}',
+				' {{ __("cms.media_files") }}',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#d33',
 			cancelButtonColor: '#3085d6',
-			confirmButtonText: '{{ __("Yes, delete them!") }}'
+			confirmButtonText: '{{ __("cms.yes_delete_them") }}'
 		}).then((result) => {
 			if (result.isConfirmed) {
 				$.ajax({
@@ -665,7 +675,7 @@ $(document).ready(function() {
 								();
 							Swal.fire({
 								icon: 'success',
-								title: '{{ __("Deleted!") }}',
+								title: '{{ __("cms.deleted") }}',
 								text: response
 									.message
 							});
@@ -676,10 +686,10 @@ $(document).ready(function() {
 					) {
 						Swal.fire({
 							icon: 'error',
-							title: '{{ __("Error") }}',
+							title: '{{ __("cms.error") }}',
 							text: xhr.responseJSON
 								?.message ||
-								'{{ __("An error occurred") }}'
+								'{{ __("cms.an_error_occurred") }}'
 						});
 					}
 				});

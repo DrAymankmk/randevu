@@ -8,24 +8,24 @@
 		@endif
 		<input type="hidden" name="{{ $namePrefix }}[is_active]" value="0">
 		<div class="col-md-2">
-			<label class="form-label small mb-0">{{ __('Label') }}</label>
+			<label class="form-label small mb-0">{{ __('cms.label') }}</label>
 			<input type="text" class="form-control form-control-sm" name="{{ $namePrefix }}[name]"
 				value="{{ old($namePrefix.'.name', $link?->name ?? '') }}">
 		</div>
 		<div class="col-md-2">
-			<label class="form-label small mb-0">{{ __('URL') }}</label>
+			<label class="form-label small mb-0">{{ __('cms.url') }}</label>
 			<input type="text" class="form-control form-control-sm" name="{{ $namePrefix }}[link]"
 				value="{{ old($namePrefix.'.link', $link?->link ?? '') }}"
 				placeholder="https://">
 		</div>
 		<div class="col-md-2">
-			<label class="form-label small mb-0">{{ __('Icon') }}</label>
+			<label class="form-label small mb-0">{{ __('cms.icon') }}</label>
 			<input type="text" class="form-control form-control-sm" name="{{ $namePrefix }}[icon]"
 				value="{{ old($namePrefix.'.icon', $link?->icon ?? '') }}"
 				placeholder="mdi mdi-link">
 		</div>
 		<div class="col-md-2">
-			<label class="form-label small mb-0">{{ __('Target') }}</label>
+			<label class="form-label small mb-0">{{ __('cms.target') }}</label>
 			<select class="form-select form-select-sm" name="{{ $namePrefix }}[target]">
 				@php $t = old($namePrefix.'.target', $link?->target ?? '_self'); @endphp
 				<option value="_self" @selected($t==='_self' )>_self</option>
@@ -33,7 +33,7 @@
 			</select>
 		</div>
 		<div class="col-md-1">
-			<label class="form-label small mb-0">{{ __('Order') }}</label>
+			<label class="form-label small mb-0">{{ __('cms.order') }}</label>
 			<input type="number" class="form-control form-control-sm" name="{{ $namePrefix }}[order]"
 				value="{{ old($namePrefix.'.order', $link?->order ?? 0) }}">
 		</div>
@@ -42,7 +42,7 @@
 			@endphp
 			<div class="d-flex align-items-center justify-content-between gap-2 mt-3">
 				<label class="form-label small mb-0"
-					for="{{ $linkActiveId }}">{{ __('Active') }}</label>
+					for="{{ $linkActiveId }}">{{ __('cms.active') }}</label>
 				<div class="form-check form-switch m-0">
 					<input type="checkbox" class="form-check-input" role="switch"
 						id="{{ $linkActiveId }}" name="{{ $namePrefix }}[is_active]"
@@ -53,14 +53,15 @@
 		</div>
 		<div class="col-md-2 text-end">
 			<button type="button" class="btn btn-sm btn-outline-danger mt-3" data-role="remove-link"
-				title="{{ __('Remove') }}">&times;</button>
+				title="{{ __('cms.remove') }}">&times;</button>
 		</div>
 		@foreach($languages as $lang)
 		@php
 		$tr = $link ? $link->translations->where('locale', $lang->code)->first() : null;
 		@endphp
 		<div class="col-12 col-md-4">
-			<label class="form-label small mb-0">{{ __('Link label') }} ({{ $lang->code }})</label>
+			<label class="form-label small mb-0">{{ __('cms.link_label') }}
+				({{ $lang->code }})</label>
 			<input type="text" class="form-control form-control-sm"
 				name="{{ $namePrefix }}[translations][{{ $lang->code }}][name]"
 				value="{{ old($namePrefix.'.translations.'.$lang->code.'.name', $tr->name ?? '') }}">
