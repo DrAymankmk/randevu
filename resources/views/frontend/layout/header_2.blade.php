@@ -86,10 +86,10 @@
  						<div class="header-button">
 							<a href="#"
 								class="th-btn style2" data-bs-toggle="modal" data-bs-target="#bookDemoModal">{{ __('main.book_demo') }}</a>
- 							<a href="#"
+ 							<!-- <a href="#"
  								class="icon-btn sideMenuToggler d-none d-lg-block"><img
  									src="{{ asset('frontend/assets/img/icon/grid.svg') }}"
- 									alt=""></a>
+ 									alt=""></a> -->
 
  						</div>
  					</div>

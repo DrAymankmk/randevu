@@ -67,13 +67,14 @@ class CmsPageBuilderController extends Controller
                     'name' => $sec['name'],
                     'type' => $sec['type'],
                     'template' => $sec['template'] ?? null,
+                    'section_layout' => CmsSection::normalizeLayout($sec['section_layout'] ?? null, $sec['type'] ?? null),
                     'settings' => $sec['settings'] ?? null,
                     'is_active' => (bool) ($sec['is_active'] ?? false),
                     'order' => $sec['order'] ?? $order,
                 ]);
                 $this->syncSectionTranslations($section, $sec['translations'] ?? []);
                 $this->syncMorphLinks($section, $sec['links'] ?? []);
-                $this->appendSectionGalleryUploads($request, $order, $section);
+                $this->syncSectionImageUpload($request, $order, $section);
 
                 foreach ($sec['items'] ?? [] as $iOrder => $itemRow) {
                     $item = $section->items()->create([
@@ -132,6 +133,7 @@ class CmsPageBuilderController extends Controller
                         'name' => $sec['name'],
                         'type' => $sec['type'],
                         'template' => $sec['template'] ?? null,
+                        'section_layout' => CmsSection::normalizeLayout($sec['section_layout'] ?? null, $sec['type'] ?? null),
                         'settings' => $sec['settings'] ?? null,
                         'is_active' => (bool) ($sec['is_active'] ?? false),
                         'order' => $sec['order'] ?? $order,
@@ -141,6 +143,7 @@ class CmsPageBuilderController extends Controller
                         'name' => $sec['name'],
                         'type' => $sec['type'],
                         'template' => $sec['template'] ?? null,
+                        'section_layout' => CmsSection::normalizeLayout($sec['section_layout'] ?? null, $sec['type'] ?? null),
                         'settings' => $sec['settings'] ?? null,
                         'is_active' => (bool) ($sec['is_active'] ?? false),
                         'order' => $sec['order'] ?? $order,
@@ -150,7 +153,7 @@ class CmsPageBuilderController extends Controller
                 $keptSectionIds[] = $section->id;
                 $this->syncSectionTranslations($section, $sec['translations'] ?? []);
                 $this->syncMorphLinks($section, $sec['links'] ?? []);
-                $this->appendSectionGalleryUploads($request, $order, $section);
+                $this->syncSectionImageUpload($request, $order, $section);
 
                 $keptItemIds = [];
                 foreach ($sec['items'] ?? [] as $iOrder => $itemRow) {
@@ -249,11 +252,11 @@ class CmsPageBuilderController extends Controller
             'sections.*.name' => ['required', 'string', 'max:255'],
             'sections.*.type' => ['required', 'string', 'max:255'],
             'sections.*.template' => ['nullable', 'string', 'max:255'],
+            'sections.*.section_layout' => ['nullable', 'string', 'max:255'],
             'sections.*.settings' => ['nullable', 'array'],
             'sections.*.order' => ['nullable', 'integer', 'min:0'],
             'sections.*.is_active' => ['nullable', 'boolean'],
-            'sections.*.gallery' => ['nullable', 'array'],
-            'sections.*.gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'sections.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'sections.*.links' => ['nullable', 'array'],
             'sections.*.links.*.name' => ['nullable', 'string', 'max:255'],
             'sections.*.links.*.link' => ['nullable', 'string', 'max:2048'],
@@ -373,23 +376,16 @@ class CmsPageBuilderController extends Controller
         }
     }
 
-    private function appendSectionGalleryUploads(Request $request, int $sectionIndex, CmsSection $section): void
+    private function syncSectionImageUpload(Request $request, int $sectionIndex, CmsSection $section): void
     {
-        $files = $request->file('sections.'.$sectionIndex.'.gallery');
+        $file = $request->file('sections.'.$sectionIndex.'.image');
 
-        if ($files === null) {
+        if (! $file || ! $file->isValid()) {
             return;
         }
 
-        if (! is_array($files)) {
-            $files = [$files];
-        }
-
-        foreach ($files as $file) {
-            if ($file && $file->isValid()) {
-                $section->addMedia($file)->toMediaCollection('gallery');
-            }
-        }
+        $section->clearMediaCollection('images');
+        $section->addMedia($file)->toMediaCollection('images');
     }
 
     private function syncItemTranslations(CmsItem $item, array $translations): void

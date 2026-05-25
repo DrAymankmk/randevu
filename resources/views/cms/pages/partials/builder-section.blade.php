@@ -1,6 +1,47 @@
 @php
 /** @var \Illuminate\Support\Collection<int, \App\Models\CmsLanguage> $languages */
 	$section = $section ?? null;
+	$sectionTypeCanonical = ['default', 'hero', 'features', 'about-us',
+	'services', 'why-choose-us', 'download-app', 'contact', 'faq', 'plans',
+	'values'];
+	if (($pageSlug ?? '') === 'subscription') {
+	$sectionTypeCanonical =
+	array_values(array_unique(array_merge(['subscription',
+	'checkout'], $sectionTypeCanonical)));
+	}
+	$typeLabel = static function ($value) {
+	$key = 'cms.' . str_replace('-', '_', strtolower((string) $value));
+	$translated = __($key);
+	if ($translated !== $key) {
+	return $translated;
+	}
+
+	return ucfirst(str_replace(['-', '_'], ' ', (string) $value));
+	};
+	$layoutLabel = static function ($value) {
+	$normalized = strtolower(trim((string) $value));
+	if ($normalized === 'style_1') {
+	return __('cms.style_1');
+	}
+	if ($normalized === 'style_2') {
+	return __('cms.style_2');
+	}
+
+	return __('cms.default_layout');
+	};
+	$tp = \App\Models\CmsSection::normalizeType(old('sections.'.$sidx.'.type',
+	$section?->type ?? 'default'));
+	$sectionTypeOptions = $sectionTypeCanonical;
+	if (! in_array($tp, $sectionTypeOptions, true)) {
+	$sectionTypeOptions[] = $tp;
+	}
+	$currentLayout = \App\Models\CmsSection::normalizeLayout(
+	old('sections.'.$sidx.'.section_layout', $section?->section_layout ?? null),
+	$tp
+	);
+	$layoutOptions = \App\Models\CmsSection::layoutOptionsFor($tp);
+	$currentPreview = \App\Models\CmsSection::previewFor($tp, $currentLayout);
+	$sectionDisplayName = old("sections.{$sidx}.name", $section?->name ?? __('cms.section'));
 	@endphp
 	<div class="card mb-3 section-card border-primary" data-role="section-card">
 		<div class="card-header d-flex justify-content-between align-items-center gap-2">
@@ -14,13 +55,22 @@
 					title="{{ __('cms.toggle_section') }}">
 					<i class="mdi mdi-chevron-down"></i>
 				</button>
-				<strong class="text-truncate">{{ __('cms.section') }}</strong>
-				@if($section)
-				<span class="small text-muted text-truncate">— {{ $section->name }}</span>
-				@endif
+				<strong class="text-truncate"
+					data-role="section-name-label">{{ $sectionDisplayName }}</strong>
+				<span class="badge bg-light text-dark border"
+					data-role="section-type-label">{{ $typeLabel($tp) }}</span>
+				<span class="badge bg-light text-primary border"
+					data-role="section-layout-label">{{ $layoutLabel($currentLayout) }}</span>
 			</div>
-			<button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0"
-				data-role="remove-section">{{ __('cms.remove_section') }}</button>
+			<div class="d-flex align-items-center gap-2 flex-shrink-0">
+				<button type="button" class="btn btn-sm btn-outline-info"
+					data-role="section-layout-guide">
+					<i class="mdi mdi-image-search-outline"></i>
+					{{ __('cms.section_layout_guide') }}
+				</button>
+				<button type="button" class="btn btn-sm btn-outline-danger"
+					data-role="remove-section">{{ __('cms.remove_section') }}</button>
+			</div>
 		</div>
 		<div id="section-collapse-{{ $sidx }}" class="collapse show" data-role="section-collapse">
 			<div class="card-body">
@@ -29,70 +79,129 @@
 					value="{{ $section->id }}">
 				@endif
 				<input type="hidden" name="sections[{{ $sidx }}][is_active]" value="0">
-				<div class="row g-2 mb-2">
-					<div class="col-md-3">
-						<label class="form-label">{{ __('cms.internal_name') }}
-							*</label>
-						<input type="text" class="form-control"
-							name="sections[{{ $sidx }}][name]"
-							value="{{ old("sections.{$sidx}.name", $section?->name ?? '') }}">
+				<div class="row g-3 mb-3 align-items-stretch">
+					<div class="col-lg-8">
+						<div class="row g-2">
+							<div class="col-md-4">
+								<label class="form-label">{{ __('cms.internal_name') }}
+									*</label>
+								<input type="text" class="form-control"
+									data-role="section-name-input"
+									name="sections[{{ $sidx }}][name]"
+									value="{{ old("sections.{$sidx}.name", $section?->name ?? '') }}"
+									placeholder="{{ __('cms.section_name_placeholder') }}">
+							</div>
+							<div class="col-md-3">
+								<label class="form-label">{{ __('cms.type') }}
+									*</label>
+								<select class="form-select"
+									data-role="section-type-select"
+									name="sections[{{ $sidx }}][type]">
+									@foreach($sectionTypeOptions as $opt)
+									<option value="{{ $opt }}"
+										{{ $tp === $opt ? 'selected' : '' }}>
+										{{ $typeLabel($opt) }}
+									</option>
+									@endforeach
+								</select>
+							</div>
+							<div class="col-md-3">
+								<label
+									class="form-label">{{ __('cms.section_layout') }}</label>
+								<select class="form-select"
+									data-role="section-layout-select"
+									name="sections[{{ $sidx }}][section_layout]">
+									@foreach($layoutOptions as $layoutKey => $layoutMeta)
+									<option value="{{ $layoutKey }}"
+										data-preview="{{ $layoutMeta['preview'] ?? '' }}"
+										{{ $currentLayout === $layoutKey ? 'selected' : '' }}>
+										{{ $layoutLabel($layoutKey) }}
+									</option>
+									@endforeach
+								</select>
+							</div>
+							<div class="col-md-2">
+								<label
+									class="form-label">{{ __('cms.order') }}</label>
+								<input type="number"
+									class="form-control"
+									name="sections[{{ $sidx }}][order]"
+									value="{{ old('sections.'.$sidx.'.order', $section?->order ?? 0) }}">
+							</div>
+							<!-- <div class="col-md-8">
+								<label
+									class="form-label">{{ __('cms.template') }}</label>
+								<input type="text" class="form-control"
+									name="sections[{{ $sidx }}][template]"
+									value="{{ old('sections.'.$sidx.'.template', $section?->template ?? '') }}"
+									placeholder="{{ __('cms.enter_template') }}">
+							</div> -->
+							<div class="col-md-4">
+								@php $sectionActiveId =
+								'section-active-'.$sidx; @endphp
+								<div
+									class="d-flex align-items-center justify-content-between gap-2 mt-4 pt-md-2">
+									<label class="form-label mb-0"
+										for="{{ $sectionActiveId }}">{{ __('cms.active') }}</label>
+									<div
+										class="form-check form-switch m-0">
+										<input type="checkbox"
+											class="form-check-input"
+											role="switch"
+											id="{{ $sectionActiveId }}"
+											name="sections[{{ $sidx }}][is_active]"
+											value="1"
+											{{ old('sections.'.$sidx.'.is_active', $section?->is_active ?? true) ? 'checked' : '' }}>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="small text-muted mt-2">
+							{{ __('cms.section_builder_hint') }}
+						</div>
 					</div>
-					<div class="col-md-2">
-						<label class="form-label">{{ __('cms.type') }} *</label>
-						@php
-						$sectionTypeCanonical = ['default', 'hero', 'features',
-						'about-us', 'services', 'why-choose-us', 'download-app',
-						'gallery', 'testimonial', 'content', 'cta'];
-						if (($pageSlug ?? '') === 'subscription') {
-						$sectionTypeCanonical =
-						array_values(array_unique(array_merge(['subscription',
-						'checkout'], $sectionTypeCanonical)));
-						}
-						$tp = trim((string) old('sections.'.$sidx.'.type',
-						$section?->type ?? 'default'));
-						if ($tp === '') {
-						$tp = 'default';
-						}
-						$sectionTypeOptions = $sectionTypeCanonical;
-						if (! in_array($tp, $sectionTypeOptions, true)) {
-						$sectionTypeOptions[] = $tp;
-						}
-						@endphp
-						<select class="form-select"
-							name="sections[{{ $sidx }}][type]">
-							@foreach($sectionTypeOptions as $opt)
-							<option value="{{ $opt }}"
-								{{ $tp === $opt ? 'selected' : '' }}>
-								{{ $opt }}</option>
-							@endforeach
-						</select>
-					</div>
-					<div class="col-md-2">
-						<label class="form-label">{{ __('cms.template') }}</label>
-						<input type="text" class="form-control"
-							name="sections[{{ $sidx }}][template]"
-							value="{{ old('sections.'.$sidx.'.template', $section?->template ?? '') }}">
-					</div>
-					<div class="col-md-1">
-						<label class="form-label">{{ __('cms.order') }}</label>
-						<input type="number" class="form-control"
-							name="sections[{{ $sidx }}][order]"
-							value="{{ old('sections.'.$sidx.'.order', $section?->order ?? 0) }}">
-					</div>
-					<div class="col-md-2">
-						@php $sectionActiveId = 'section-active-'.$sidx; @endphp
+					<div class="col-lg-4">
 						<div
-							class="d-flex align-items-center justify-content-between gap-2 mt-4">
-							<label class="form-label mb-0"
-								for="{{ $sectionActiveId }}">{{ __('cms.active') }}</label>
-							<div class="form-check form-switch m-0">
-								<input type="checkbox"
-									class="form-check-input"
-									role="switch"
-									id="{{ $sectionActiveId }}"
-									name="sections[{{ $sidx }}][is_active]"
-									value="1"
-									{{ old('sections.'.$sidx.'.is_active', $section?->is_active ?? true) ? 'checked' : '' }}>
+							class="card border-0 bg-light h-100 builder-layout-preview">
+							<div class="card-body p-3">
+								<div
+									class="d-flex justify-content-between align-items-center gap-2 mb-2">
+									<div>
+										<div
+											class="fw-semibold small">
+											{{ __('cms.layout_preview') }}
+										</div>
+										<div class="text-muted small"
+											data-role="section-preview-type">
+											{{ $typeLabel($tp) }}
+										</div>
+									</div>
+									<span class="badge bg-white text-primary border"
+										data-role="section-layout-pill">{{ $layoutLabel($currentLayout) }}</span>
+								</div>
+								@if($currentPreview)
+								<img src="{{ asset($currentPreview) }}"
+									alt="{{ $typeLabel($tp) }}"
+									class="img-fluid rounded border builder-zoomable-preview"
+									data-role="section-layout-preview-image"
+									role="button" tabindex="0"
+									title="{{ __('cms.click_image_to_zoom') }}">
+								<div class="text-muted small mt-2"
+									data-role="section-layout-preview-empty"
+									style="display:none;">
+									{{ __('cms.no_layout_preview_available') }}
+								</div>
+								@else
+								<img src="" alt=""
+									class="img-fluid rounded border d-none builder-zoomable-preview"
+									data-role="section-layout-preview-image"
+									role="button" tabindex="0"
+									title="{{ __('cms.click_image_to_zoom') }}">
+								<div class="text-muted small mt-2"
+									data-role="section-layout-preview-empty">
+									{{ __('cms.no_layout_preview_available') }}
+								</div>
+								@endif
 							</div>
 						</div>
 					</div>
@@ -183,14 +292,13 @@
 					</div>
 				</div>
 				@endif
-				@include('components.gallery-upload', [
-				'deferGalleryInit' => true,
-				'inputId' => 'section-gallery-'.$sidx,
-				'inputName' => 'sections['.$sidx.'][gallery]',
-				'collection' => 'gallery',
-				'label' => __('cms.gallery_images'),
-				'existingImages' => ($section ?? null) ? $section->getMedia('gallery') :
-				collect([]),
+				@include('components.image-upload', [
+				'inputId' => 'section-image-'.$sidx,
+				'inputName' => 'sections['.$sidx.'][image]',
+				'collection' => 'images',
+				'label' => __('cms.main_image'),
+				'existingImage' => ($section ?? null) ? $section->getFirstMediaUrl('images') :
+				null,
 				])
 				<hr>
 				<div class="d-flex justify-content-between align-items-center mb-2">

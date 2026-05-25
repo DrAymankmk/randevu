@@ -72,10 +72,10 @@
 										class="fa-light fa-magnifying-glass"></i></button>
 							</form>
 
-							<a href="#"
+							<!-- <a href="#"
 								class="icon-btn sideMenuToggler d-none d-lg-block"><img
 									src="{{ asset('frontend/assets/img/icon/grid.svg') }}"
-									alt=""></a>
+									alt=""></a> -->
 						</div>
 					</div>
 				</div>

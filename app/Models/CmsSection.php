@@ -23,6 +23,7 @@ class CmsSection extends Model implements HasMedia
         'name',
         'type',
         'template',
+        'section_layout',
         'settings',
         'order',
         'is_active',
@@ -142,5 +143,116 @@ class CmsSection extends Model implements HasMedia
             ->width(800)
             ->height(600)
             ->performOnCollections('images', 'gallery');
+    }
+
+    public static function normalizeType(?string $type): string
+    {
+        $type = strtolower(trim(str_replace('_', '-', (string) $type)));
+
+        $aliases = [
+            '' => 'default',
+            'about' => 'about-us',
+            'pricing' => 'plans',
+            'pricing-plan' => 'plans',
+            'project' => 'gallery',
+            'testimonials' => 'testimonial',
+            'about-us' => 'about-us',
+            'about_us' => 'about-us',
+            'whychooseus' => 'why-choose-us',
+            'whychoose-us' => 'why-choose-us',
+            'why_chooseus' => 'why-choose-us',
+            'why_choose_us' => 'why-choose-us',
+            'download' => 'download-app',
+            'download-app' => 'download-app',
+            'download_app' => 'download-app',
+        ];
+
+        return $aliases[$type] ?? $type;
+    }
+
+    public static function layoutCatalog(): array
+    {
+        return [
+            'default' => [
+                'default' => ['preview' => null],
+            ],
+            'hero' => [
+                'style_1' => ['preview' => 'frontend/layouts/hero_section_style_1.png'],
+            ],
+            'features' => [
+                'style_1' => ['preview' => 'frontend/layouts/features_section_style_1.png'],
+            ],
+            'about-us' => [
+                'style_1' => ['preview' => 'frontend/layouts/about_section_style_1.png'],
+            ],
+            'services' => [
+                'style_1' => ['preview' => 'frontend/layouts/services_section_style_1.png'],
+                'style_2' => ['preview' => 'frontend/layouts/services_section_style_2.png'],
+            ],
+            'why-choose-us' => [
+                'style_1' => ['preview' => 'frontend/layouts/why_choose_us_section_style_1.png'],
+            ],
+            'download-app' => [
+                'style_1' => ['preview' => 'frontend/layouts/download_section_style_1.png'],
+            ],
+            'contact' => [
+                'style_1' => ['preview' => 'frontend/layouts/contact_section_style_1.png'],
+            ],
+            'faq' => [
+                'style_1' => ['preview' => 'frontend/layouts/faq_section_style_1.png'],
+            ],
+            'plans' => [
+                'style_1' => ['preview' => 'frontend/layouts/plans_section_style_1.png'],
+            ],
+            'subscription' => [
+                'default' => ['preview' => 'frontend/layouts/subscription_section.png'],
+            ],
+            'checkout' => [
+                'default' => ['preview' => 'frontend/layouts/subscription_section.png'],
+            ],
+            'values' => [
+                'style_1' => ['preview' => 'frontend/layouts/values_section_style_1.png'],
+            ],
+            'gallery' => [
+                'default' => ['preview' => null],
+            ],
+            'testimonial' => [
+                'default' => ['preview' => null],
+            ],
+            'content' => [
+                'default' => ['preview' => null],
+            ],
+            'cta' => [
+                'default' => ['preview' => null],
+            ],
+        ];
+    }
+
+    public static function layoutOptionsFor(?string $type): array
+    {
+        $type = static::normalizeType($type);
+        $catalog = static::layoutCatalog();
+
+        return $catalog[$type] ?? $catalog['default'];
+    }
+
+    public static function normalizeLayout(?string $layout, ?string $type): string
+    {
+        $layout = strtolower(trim((string) $layout));
+        $options = static::layoutOptionsFor($type);
+
+        if ($layout !== '' && array_key_exists($layout, $options)) {
+            return $layout;
+        }
+
+        return array_key_first($options) ?? 'default';
+    }
+
+    public static function previewFor(?string $type, ?string $layout): ?string
+    {
+        $normalizedLayout = static::normalizeLayout($layout, $type);
+        $options = static::layoutOptionsFor($type);
+
+        return $options[$normalizedLayout]['preview'] ?? null;
     }
 }

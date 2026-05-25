@@ -2,6 +2,20 @@
 
 @php
 $isEdit = $page !== null;
+$currentPageSlug = $page->slug ?? '';
+$builderLayoutCatalog = \App\Models\CmsSection::layoutCatalog();
+$builderTypeLabels = [];
+foreach (array_keys($builderLayoutCatalog) as $builderTypeKey) {
+    $builderTypeLabelKey = 'cms.' . str_replace('-', '_', $builderTypeKey);
+    $builderTypeTranslated = __($builderTypeLabelKey);
+    $builderTypeLabels[$builderTypeKey] = $builderTypeTranslated !== $builderTypeLabelKey
+        ? $builderTypeTranslated
+        : ucfirst(str_replace(['-', '_'], ' ', $builderTypeKey));
+}
+$quickAddTypes = ['hero', 'features', 'services', 'about-us', 'contact', 'faq'];
+if ($currentPageSlug === 'subscription') {
+    $quickAddTypes = ['subscription', 'features', 'plans', 'faq', 'contact'];
+}
 @endphp
 
 @section('content')
@@ -157,6 +171,30 @@ $isEdit = $page !== null;
 						<i class="mdi mdi-plus"></i> {{ __('cms.add_section') }}
 					</button>
 				</div>
+				<div class="card border-0 bg-light mb-3 builder-help-card">
+					<div class="card-body py-3">
+						<div class="row g-3 align-items-center">
+							<div class="col-lg-7">
+								<div class="fw-semibold mb-1">{{ __('cms.builder_tips_title') }}</div>
+								<div class="text-muted small mb-0">
+									{{ __('cms.builder_tips_text') }}
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+									@foreach($quickAddTypes as $quickType)
+									<button type="button"
+										class="btn btn-sm btn-outline-primary"
+										data-role="quick-add-section"
+										data-section-type="{{ $quickType }}">
+										{{ __('cms.quick_add') }}: {{ __('cms.'.str_replace('-', '_', $quickType)) }}
+									</button>
+									@endforeach
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div id="sections-container">
 					@if($isEdit)
 					@foreach($page->sections as $sidx => $section)
@@ -168,6 +206,25 @@ $isEdit = $page !== null;
 					])
 					@endforeach
 					@endif
+					<div class="card border-dashed text-center p-4 bg-light d-none"
+						id="sections-empty-state">
+						<div class="mb-2">
+							<i class="mdi mdi-view-dashboard-outline fs-1 text-primary"></i>
+						</div>
+						<h6 class="mb-1">{{ __('cms.no_sections_added') }}</h6>
+						<p class="text-muted small mb-3">
+							{{ __('cms.no_sections_added_hint') }}
+						</p>
+						<div class="d-flex flex-wrap gap-2 justify-content-center">
+							@foreach($quickAddTypes as $quickType)
+							<button type="button" class="btn btn-sm btn-outline-primary"
+								data-role="quick-add-section"
+								data-section-type="{{ $quickType }}">
+								{{ __('cms.'.str_replace('-', '_', $quickType)) }}
+							</button>
+							@endforeach
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -217,6 +274,17 @@ $isEdit = $page !== null;
 						</button>
 					</div>
 				</div>
+				<div class="card mt-3 border-0 shadow-sm">
+					<div class="card-body">
+						<h6 class="mb-2">{{ __('cms.builder_checklist') }}</h6>
+						<ul class="small text-muted mb-0 ps-3">
+							<li>{{ __('cms.builder_checklist_sections') }}</li>
+							<li>{{ __('cms.builder_checklist_layouts') }}</li>
+							<li>{{ __('cms.builder_checklist_translations') }}</li>
+							<li>{{ __('cms.builder_checklist_publish') }}</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</form>
@@ -233,6 +301,48 @@ $isEdit = $page !== null;
 		@include('cms.pages.partials.builder-link-row', ['namePrefix' => '__PREFIX__', 'link' => null,
 		'languages' => $languages])
 	</div>
+
+	<div class="modal fade" id="sectionLayoutGuideModal" tabindex="-1"
+		aria-labelledby="sectionLayoutGuideModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div>
+						<h5 class="modal-title mb-1" id="sectionLayoutGuideModalLabel">
+							{{ __('cms.section_layout_guide') }}
+						</h5>
+						<div class="small text-muted" id="sectionLayoutGuideModalHint">
+							{{ __('cms.layout_guide_hint') }}
+						</div>
+					</div>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="row g-3" id="section-layout-guide-list"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="sectionLayoutZoomModal" tabindex="-1"
+		aria-labelledby="sectionLayoutZoomModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="sectionLayoutZoomModalLabel">
+						{{ __('cms.layout_preview') }}
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body text-center">
+					<img src="" alt="" id="section-layout-zoom-image"
+						class="img-fluid rounded border">
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 @endsection
 
@@ -248,12 +358,337 @@ $isEdit = $page !== null;
 .item-card [data-role="item-collapse-toggle"].collapsed .mdi-chevron-down {
 	transform: rotate(-90deg);
 }
+
+.builder-help-card {
+	border: 1px solid rgba(13, 110, 253, 0.12);
+}
+
+.builder-layout-preview img {
+	width: 100%;
+	max-height: 220px;
+	object-fit: contain;
+	background: #fff;
+}
+
+.builder-zoomable-preview {
+	cursor: zoom-in;
+}
+
+.builder-layout-preview .card-body {
+	min-height: 100%;
+}
+
+#sections-empty-state {
+	border: 2px dashed rgba(13, 110, 253, 0.25);
+}
+
+.section-card .badge {
+	font-weight: 500;
+}
+
+.layout-guide-card {
+	border: 1px solid rgba(13, 110, 253, 0.14);
+}
+
+.layout-guide-card.is-selected {
+	border-color: rgba(13, 110, 253, 0.5);
+	box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.08);
+}
+
+.layout-guide-card .layout-guide-preview {
+	width: 100%;
+	height: 200px;
+	object-fit: contain;
+	background: #fff;
+}
+
+.layout-guide-group + .layout-guide-group {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(108, 117, 125, 0.18);
+}
+
+.layout-guide-group-title {
+	font-weight: 600;
+}
+
+.layout-guide-preview-empty {
+	min-height: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	border: 1px dashed rgba(108, 117, 125, 0.3);
+	border-radius: 0.5rem;
+	background: rgba(248, 249, 250, 0.8);
+}
+
+#section-layout-zoom-image {
+	max-height: 75vh;
+	object-fit: contain;
+	background: #fff;
+}
 </style>
 @endpush
 
 @push('scripts')
+<script type="application/json" id="cms-builder-config">{!! json_encode([
+	'layoutCatalog' => $builderLayoutCatalog,
+	'typeLabels' => $builderTypeLabels,
+	'assetBase' => rtrim(asset(''), '/'),
+	'sectionFallbackName' => __('cms.section'),
+	'defaultLayoutLabel' => __('cms.default_layout'),
+	'style1Label' => __('cms.style_1'),
+	'style2Label' => __('cms.style_2'),
+	'guideTitle' => __('cms.section_layout_guide'),
+	'guideHint' => __('cms.layout_guide_hint'),
+	'clickToZoom' => __('cms.click_image_to_zoom'),
+	'currentLayoutLabel' => __('cms.current_layout'),
+	'currentSectionLabel' => __('cms.section'),
+	'noPreviewLabel' => __('cms.no_layout_preview_available'),
+]) !!}</script>
 <script>
 (function($) {
+	var builderConfigEl = document.getElementById('cms-builder-config');
+	var builderConfig = builderConfigEl ? JSON.parse(builderConfigEl.textContent) : {};
+	var layoutCatalog = builderConfig.layoutCatalog || {};
+	var typeLabels = builderConfig.typeLabels || {};
+	var assetBase = builderConfig.assetBase || '';
+	var sectionFallbackName = builderConfig.sectionFallbackName || 'Section';
+	var defaultLayoutLabel = builderConfig.defaultLayoutLabel || 'Default';
+	var style1Label = builderConfig.style1Label || 'Style 1';
+	var style2Label = builderConfig.style2Label || 'Style 2';
+	var guideTitle = builderConfig.guideTitle || 'Section layout guide';
+	var guideHint = builderConfig.guideHint || '';
+	var clickToZoom = builderConfig.clickToZoom || 'Click image to zoom';
+	var currentLayoutLabel = builderConfig.currentLayoutLabel || 'Current layout';
+	var currentSectionLabel = builderConfig.currentSectionLabel || 'Section';
+	var noPreviewLabel = builderConfig.noPreviewLabel || 'No preview available';
+
+	function getLayoutLabel(key) {
+		return key === 'style_1' ? style1Label : (key === 'style_2' ? style2Label :
+			defaultLayoutLabel);
+	}
+
+	function getTypeLabel(key) {
+		return typeLabels[key] || key;
+	}
+
+	function resolvePreviewUrl(preview) {
+		if (!preview) {
+			return '';
+		}
+
+		return preview.indexOf('http') === 0 ? preview : assetBase + '/' + String(preview)
+			.replace(/^\/+/, '');
+	}
+
+	function openLayoutZoomModal(imageSrc, title) {
+		if (!imageSrc || !window.bootstrap) {
+			return;
+		}
+
+		var modalEl = document.getElementById('sectionLayoutZoomModal');
+		if (!modalEl) {
+			return;
+		}
+
+		var img = document.getElementById('section-layout-zoom-image');
+		var label = document.getElementById('sectionLayoutZoomModalLabel');
+		if (img) {
+			img.src = imageSrc;
+			img.alt = title || '';
+		}
+		if (label) {
+			label.textContent = title || guideTitle;
+		}
+
+		bootstrap.Modal.getOrCreateInstance(modalEl).show();
+	}
+
+	function openSectionLayoutGuide($card) {
+		var typeValue = $card.find('[data-role="section-type-select"]').first().val() ||
+			'default';
+		var typeLabel = $card.find('[data-role="section-type-label"]').first().text() ||
+			typeValue;
+		var selectedLayout = $card.find('[data-role="section-layout-select"]').first().val() ||
+			'default';
+		var html = Object.keys(layoutCatalog).map(function(typeKey) {
+			var options = getLayoutOptions(typeKey);
+			var cards = Object.keys(options).map(function(layoutKey) {
+				var previewUrl = resolvePreviewUrl(options[layoutKey] && options[layoutKey].preview ?
+					options[layoutKey].preview : '');
+				var label = getLayoutLabel(layoutKey);
+				var isSelected = typeKey === normalizeSectionType(typeValue) && layoutKey ===
+					selectedLayout;
+				var previewBlock = previewUrl ?
+					'<img src="' + previewUrl + '" alt="' + label +
+					'" class="layout-guide-preview rounded mb-3 builder-zoomable-preview" data-role="open-layout-zoom" data-image-src="' +
+					previewUrl + '" data-image-title="' + getTypeLabel(typeKey) + ' - ' +
+					label + '" title="' + clickToZoom + '">' :
+					'<div class="layout-guide-preview-empty mb-3 text-muted small">' +
+					noPreviewLabel + '</div>';
+
+				return '<div class="col-md-6 col-xl-4"><div class="card h-100 layout-guide-card' +
+					(isSelected ? ' is-selected' : '') + '"><div class="card-body">' +
+					'<div class="d-flex justify-content-between align-items-center mb-2">' +
+					'<div class="fw-semibold">' + label + '</div>' +
+					(isSelected ? '<span class="badge bg-primary-subtle text-primary border">' +
+						currentLayoutLabel + '</span>' : '') +
+					'</div>' + previewBlock + '</div></div></div>';
+			}).join('');
+
+			return '<div class="layout-guide-group"><div class="d-flex justify-content-between align-items-center mb-3"><div class="layout-guide-group-title">' +
+				getTypeLabel(typeKey) + '</div>' +
+				(typeKey === normalizeSectionType(typeValue) ? '<span class="badge bg-light text-primary border">' +
+					currentSectionLabel + '</span>' : '') +
+				'</div><div class="row g-3">' + cards + '</div></div>';
+		}).join('');
+
+		var modalEl = document.getElementById('sectionLayoutGuideModal');
+		if (!modalEl || !window.bootstrap) {
+			return;
+		}
+
+		var titleEl = document.getElementById('sectionLayoutGuideModalLabel');
+		var hintEl = document.getElementById('sectionLayoutGuideModalHint');
+		var listEl = document.getElementById('section-layout-guide-list');
+		if (titleEl) {
+			titleEl.textContent = guideTitle;
+		}
+		if (hintEl) {
+			hintEl.textContent = guideHint + ' (' + currentSectionLabel + ': ' + typeLabel +
+				' / ' + currentLayoutLabel + ': ' + getLayoutLabel(selectedLayout) + ')';
+		}
+		if (listEl) {
+			listEl.innerHTML = html;
+		}
+
+		bootstrap.Modal.getOrCreateInstance(modalEl).show();
+	}
+
+	function normalizeSectionType(value) {
+		var normalized = String(value || 'default').trim().toLowerCase()
+			.replace(/_/g, '-');
+		var aliases = {
+			'': 'default',
+			'about': 'about-us',
+			'pricing': 'plans',
+			'pricing-plan': 'plans',
+			'project': 'gallery',
+			'testimonials': 'testimonial',
+			'about-us': 'about-us',
+			'about_us': 'about-us',
+			'whychooseus': 'why-choose-us',
+			'whychoose-us': 'why-choose-us',
+			'why_chooseus': 'why-choose-us',
+			'why_choose_us': 'why-choose-us',
+			'download': 'download-app',
+			'download-app': 'download-app',
+			'download_app': 'download-app'
+		};
+
+		return aliases[normalized] || normalized || 'default';
+	}
+
+	function getLayoutOptions(type) {
+		var normalizedType = normalizeSectionType(type);
+		return layoutCatalog[normalizedType] || layoutCatalog.default || {
+			default: {
+				preview: null
+			}
+		};
+	}
+
+	function renderLayoutOptions($select, type, selectedLayout) {
+		if (!$select.length) {
+			return selectedLayout || 'default';
+		}
+		var options = getLayoutOptions(type);
+		var keys = Object.keys(options);
+		var selected = selectedLayout && options[selectedLayout] ? selectedLayout :
+			(keys[0] || 'default');
+		var html = keys.map(function(key) {
+			var label = key === 'style_1' ? style1Label : (key ===
+				'style_2' ? style2Label : defaultLayoutLabel);
+			var preview = options[key] && options[key].preview ? options[key]
+				.preview : '';
+			return '<option value="' + key + '" data-preview="' + preview +
+				'"' + (key === selected ? ' selected' : '') + '>' + label +
+				'</option>';
+		}).join('');
+		$select.html(html);
+		return selected;
+	}
+
+	function refreshSectionCardUI($card, preferredLayout) {
+		var $name = $card.find('[data-role="section-name-input"]').first();
+		var $type = $card.find('[data-role="section-type-select"]').first();
+		var $layout = $card.find('[data-role="section-layout-select"]').first();
+		var sectionName = ($name.val() || '').trim() || sectionFallbackName;
+		var typeValue = $type.val() || 'default';
+		var layoutValue = renderLayoutOptions($layout, typeValue, preferredLayout ||
+			$layout.val());
+		var $selectedType = $type.find('option:selected');
+		var $selectedLayout = $layout.find('option:selected');
+		var preview = $selectedLayout.data('preview') || '';
+
+		$card.find('[data-role="section-name-label"]').text(sectionName);
+		$card.find('[data-role="section-type-label"]').text($selectedType.text() ||
+			typeValue);
+		$card.find('[data-role="section-layout-label"], [data-role="section-layout-pill"]')
+			.text($selectedLayout.text() || layoutValue);
+		$card.find('[data-role="section-preview-type"]').text($selectedType.text() ||
+			typeValue);
+
+		var $img = $card.find('[data-role="section-layout-preview-image"]').first();
+		var $empty = $card.find('[data-role="section-layout-preview-empty"]').first();
+		if (preview) {
+			var previewUrl = resolvePreviewUrl(preview);
+			$img.attr('src', previewUrl)
+				.attr('alt', ($selectedType.text() || typeValue) + ' - ' + ($selectedLayout
+					.text() || layoutValue))
+				.attr('title', clickToZoom)
+				.data('image-title', ($selectedType.text() || typeValue) + ' - ' +
+					($selectedLayout.text() || layoutValue))
+				.removeClass('d-none');
+			$empty.hide();
+		} else {
+			$img.attr('src', '')
+				.attr('alt', '')
+				.data('image-title', '')
+				.addClass('d-none');
+			$empty.show();
+		}
+	}
+
+	function toggleSectionsEmptyState() {
+		$('#sections-empty-state').toggleClass('d-none', $('#sections-container .section-card')
+			.length > 0);
+	}
+
+	function addSectionCard(presetType) {
+		var si = $('#sections-container .section-card').length;
+		var $el = cloneFrom($('#section-prototype'), {
+			'__SIDX__': si
+		});
+		var typeToUse = presetType || 'default';
+		var typeLabel = $el.find('[data-role="section-type-select"] option[value="' +
+				typeToUse + '"]')
+			.first()
+			.text() || sectionFallbackName;
+		$el.find('[data-role="section-name-input"]').first().val(typeLabel + ' ' + (si +
+			1));
+		$('#sections-container').append($el);
+		var $typeSelect = $el.find('[data-role="section-type-select"]').first();
+		if ($typeSelect.length) {
+			$typeSelect.val(typeToUse);
+		}
+		reindexSections();
+		refreshSectionCardUI($el);
+		toggleSectionsEmptyState();
+	}
+
 	function syncSectionBuilderIds($card, si) {
 		var base = 'section-' + si;
 		var $langBlock = $card.find('[data-role="section-lang-tabs"]').first();
@@ -395,18 +830,27 @@ $isEdit = $page !== null;
 					si + ']');
 			});
 			syncSectionBuilderIds($card, si);
-			var sectionGid = 'section-gallery-' + si;
-			$card.find('.gallery-upload-container').filter(function() {
-					return $(this).closest(
-							'.item-card'
-						)
-						.length === 0;
-				}).find('input.gallery-input').attr('id',
-					sectionGid).end()
-				.find('.gallery-preview').attr('id',
-					'gallery-preview-' + sectionGid);
+			var sectionImageId = 'section-image-' + si;
+			var sectionPreviewId = 'preview_' + sectionImageId;
+			var $sectionImageWrap = $card.find('.image-upload-wrapper').filter(function() {
+				return $(this).closest('.item-card').length === 0;
+			}).first();
+			if ($sectionImageWrap.length) {
+				var $input = $sectionImageWrap.find('input[type=file]').first();
+				var $preview = $sectionImageWrap.find('.image-preview-container').first();
+				$input.attr('id', sectionImageId);
+				$input.attr('onchange', "previewImage(this, '" + sectionPreviewId + "')");
+				$preview.attr('id', sectionPreviewId);
+				$preview.find('img').first().attr('id', sectionPreviewId + '_img');
+				$sectionImageWrap.find('.image-preview-container button').first().attr(
+					'onclick',
+					"removeImagePreview('" + sectionPreviewId + "', '" + sectionImageId + "')"
+				);
+			}
 			reindexItemImagesAndGallery($card);
+			refreshSectionCardUI($card);
 		});
+		toggleSectionsEmptyState();
 		if (window.initCmsQuillRoots) {
 			var sc = document.getElementById('sections-container');
 			if (sc) {
@@ -476,7 +920,7 @@ $isEdit = $page !== null;
 		}
 		Swal.fire({
 			title: '{{ __("Are you sure?") }}',
-			text: "{{ __("You won't be able to revert this!") }}",
+			text: "{{ __('This action cannot be undone.') }}",
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
@@ -681,18 +1125,51 @@ $isEdit = $page !== null;
 	}
 
 	$('#btn-add-section').on('click', function() {
-		var si = $('#sections-container .section-card').length;
-		var $el = cloneFrom($('#section-prototype'), {
-			'__SIDX__': si
-		});
-		$el.find('input[name*="[name]"]').first().val('{{ __('Section') }} ' + (si + 1));
-		$('#sections-container').append($el);
-		reindexSections();
+		addSectionCard();
+	});
+
+	$(document).on('click', '[data-role="quick-add-section"]', function() {
+		addSectionCard($(this).data('section-type'));
 	});
 
 	$(document).on('click', '[data-role="remove-section"]', function() {
 		$(this).closest('.section-card').remove();
 		reindexSections();
+	});
+
+	$(document).on('input', '[data-role="section-name-input"]', function() {
+		refreshSectionCardUI($(this).closest('.section-card'));
+	});
+
+	$(document).on('change', '[data-role="section-type-select"]', function() {
+		refreshSectionCardUI($(this).closest('.section-card'));
+	});
+
+	$(document).on('change', '[data-role="section-layout-select"]', function() {
+		refreshSectionCardUI($(this).closest('.section-card'), $(this).val());
+	});
+
+	$(document).on('click', '[data-role="section-layout-guide"]', function() {
+		openSectionLayoutGuide($(this).closest('.section-card'));
+	});
+
+	$(document).on('click', '[data-role="section-layout-preview-image"]', function() {
+		var src = $(this).attr('src');
+		if (!src || $(this).hasClass('d-none')) {
+			return;
+		}
+		openLayoutZoomModal(src, $(this).data('image-title'));
+	});
+
+	$(document).on('keydown', '[data-role="section-layout-preview-image"]', function(e) {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			$(this).trigger('click');
+		}
+	});
+
+	$(document).on('click', '[data-role="open-layout-zoom"]', function() {
+		openLayoutZoomModal($(this).data('image-src'), $(this).data('image-title'));
 	});
 
 	$(document).on('click', '[data-role="add-item"]', function() {
@@ -760,6 +1237,9 @@ $isEdit = $page !== null;
 			reindexPageLinks();
 		}
 	});
+
+	reindexSections();
+	reindexPageLinks();
 })(jQuery);
 </script>
 @endpush
