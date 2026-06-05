@@ -27,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! function_exists('proc_open')) {
+            config([
+                'media-library.image_optimizers' => [],
+                'media-library.queue_conversions_by_default' => false,
+            ]);
+        }
+
         Paginator::useBootstrap();
 
         View::composer('layout_new.partials.sidebar', function ($view) {

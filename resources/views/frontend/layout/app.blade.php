@@ -17,10 +17,10 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>Medova - Health & Medical Template - medical clinic</title>
-	<meta name="author" content="themeholy">
-	<meta name="description" content="Medova  - Health & Medical Template">
-	<meta name="keywords" content="Medova  - Health & Medical Template">
+	<title>Randevu</title>
+	<meta name="author" content="Randevu">
+	<meta name="description" content="Randevu">
+	<meta name="keywords" content="Randevu">
 	<meta name="robots" content="INDEX,FOLLOW">
 
 	<!-- Mobile Specific Metas -->
@@ -28,35 +28,15 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 
 	<!-- Favicons - Place favicon.ico in the root directory -->
 	<link rel="apple-touch-icon" sizes="57x57"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-57x57.png') }}">
+		href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<link rel="apple-touch-icon" sizes="60x60"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-60x60.png') }}">
-	<link rel="apple-touch-icon" sizes="72x72"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-72x72.png') }}">
-	<link rel="apple-touch-icon" sizes="76x76"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-76x76.png') }}">
-	<link rel="apple-touch-icon" sizes="114x114"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-114x114.png') }}">
-	<link rel="apple-touch-icon" sizes="120x120"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-120x120.png') }}">
-	<link rel="apple-touch-icon" sizes="144x144"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-144x144.png') }}">
-	<link rel="apple-touch-icon" sizes="152x152"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-152x152.png') }}">
-	<link rel="apple-touch-icon" sizes="180x180"
-		href=" {{ asset('frontend/assets/img/favicons/apple-icon-180x180.png') }}">
+		href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<link rel="icon" type="image/png" sizes="192x192"
-		href=" {{ asset('frontend/assets/img/favicons/android-icon-192x192.png') }}">
+		href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<link rel="icon" type="image/png" sizes="32x32"
-		href=" {{ asset('frontend/assets/img/favicons/favicon-32x32.png') }}">
-	<link rel="icon" type="image/png" sizes="96x96"
-		href=" {{ asset('frontend/assets/img/favicons/favicon-96x96.png') }}">
+		href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<link rel="icon" type="image/png" sizes="16x16"
-		href=" {{ asset('frontend/assets/img/favicons/favicon-16x16.png') }}">
-	<link rel="manifest" href=" {{ asset('frontend/assets/img/favicons/manifest.json') }}">
-	<meta name="msapplication-TileColor" content="#ffffff">
-	<meta name="msapplication-TileImage"
-		content=" {{ asset('frontend/assets/img/favicons/ms-icon-144x144.png') }}">
+		href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<meta name="theme-color" content="#ffffff">
 
 	<!--==============================
@@ -423,220 +403,7 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 	<!--==============================
         Footer Area
     ==============================-->
-	<footer class="footer-wrapper bg-title footer-layout1" data-bg-src="assets/img/bg/footer_bg_1.png">
-		<div class="widget-area">
-			<div class="container">
-				<div class="row justify-content-between">
-					<div class="col-md-6 col-xxl-3 col-xl-4">
-						<div class="widget footer-widget mb-0">
-							<div class="th-widget-about">
-								<div class="about-logo">
-									<a
-										href="{{ route('frontend.home') }}"><img
-											style="height:50px; width:100px;"
-											src="{{ asset('frontend/assets/img/logo.png') }}"
-											alt="Randevu "></a>
-								</div>
-								<p class="about-text">Medova is a
-									convenience services to the
-									adaptability, Spacious modern
-									villa living room
-									with centrally placed swimming
-									pool blending indooroutdoor
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-xl-auto">
-						<div class="widget widget_nav_menu style2 footer-widget">
-							<h3 class="widget_title">Quick Links</h3>
-							<div class="menu-all-pages-container">
-								<ul class="menu">
-									<li><a href="index.html">Home</a>
-									</li>
-									<li><a href="about.html">About
-											Us</a>
-									</li>
-									<li><a href="Services.html">Services</a>
-									</li>
-									<li><a href="contact.html">Our
-											Staff</a>
-									</li>
-									<li><a href="contact.html">Term
-											&
-											Conditions</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-xl-auto">
-						<div class="widget widget_nav_menu footer-widget">
-							<h3 class="widget_title">Departments</h3>
-							<div class="menu-all-pages-container">
-								<ul class="menu">
-									<li><a href="about.html">Dental
-											Surgery</a>
-									</li>
-									<li><a href="contact.html">General
-											Analysis</a>
-									</li>
-									<li><a href="course.html">Preventative
-											Care</a>
-									</li>
-									<li><a href="course.html">Eye
-											Care
-											Solution</a>
-									</li>
-									<li><a href="contact.html">Population
-											Health</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-xl-auto">
-						<div class="widget widget_nav_menu footer-widget">
-							<h3 class="widget_title">Services</h3>
-							<div class="menu-all-pages-container">
-								<ul class="menu">
-									<li><a href="service.html">Primary
-											Care</a>
-									</li>
-									<li><a href="service.html">Mental
-											Care</a>
-									</li>
-									<li><a href="service.html">Speciality
-											Care</a>
-									</li>
-									<li><a href="service.html">Dental
-											Care</a>
-									</li>
-									<li><a href="service.html">Eye
-											Care</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-xl-auto">
-						<div class="widget widget_nav_menu footer-widget">
-							<h3 class="widget_title">Support</h3>
-							<div class="menu-all-pages-container">
-								<ul class="menu">
-									<li><a href="contact.html">Help
-											Center</a>
-									</li>
-									<li><a href="faq.html">FAQs</a>
-									</li>
-									<li><a href="contact.html">Contact
-											Us</a>
-									</li>
-									<li><a href="contact.html">Ticket
-											Support</a>
-									</li>
-									<li><a href="contact.html">Live
-											Chat</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="container">
-				<div class="row justify-content-end align-items-end">
-					<div class="col-xl-4">
-						<div class="footer-widget-about">
-							<div class="th-widget-about">
-								<p class="footer-info"><i
-										class="fa-sharp fa-solid fa-phone"></i>
-									<span><a class="text-inherit"
-											href="tel:+00123456789012">+00
-											(123) 456
-											789
-											012</a></span>
-								</p>
-								<p class="footer-info"><i
-										class="fa-sharp fa-solid fa-envelope"></i><span>
-										<a class="text-inherit"
-											href="mailto:infomail123@domain.com">infomail123@domain.com</a></span>
-								</p>
-								<p class="footer-info"><i
-										class="fas fa-map-marker-alt"></i>West
-									2nd lane, Inner circular
-									road, New York City</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-xl-8">
-						<div class="row gy-4 align-items-center">
-							<div class="col-lg-6">
-								<div
-									class="title-area mb-0 text-center text-lg-start">
-									<h4 class="sec-title m-0">
-										Explore Our
-										Comprehensive
-										Healthcare Solutions
-									</h4>
-								</div>
-							</div>
-							<div class="col-lg-6">
-								<div class="footer-top-btn">
-									<div
-										class="btn-group justify-content-center justify-content-lg-end">
-										<a href="contact.html"
-											class="th-btn">Make
-											Appointment
-											<i
-												class="fa-light fa-arrow-right-long ms-2"></i></a>
-										<a href="contact.html"
-											class="th-btn style2">Our
-											Specialists<i
-												class="fa-light fa-arrow-right-long ms-2"></i></a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="copyright-wrap">
-				<div class="container">
-					<div class="row gy-2 align-items-center">
-						<div class="col-lg-5">
-							<p class="copyright-text">Copyright <i
-									class="fal fa-copyright"></i>
-								2025 <a
-									href="https://themeforest.net/user/themeholy">Medova</a>.
-								All Rights Reserved.</p>
-						</div>
-						<div class="col-lg-7 text-center text-lg-end">
-							<div class="social-links">
-								<span class="title">Social Media:</span>
-								<a href="https://www.facebook.com/"><i
-										class="fab fa-facebook-f"></i></a>
-								<a href="https://www.twitter.com/"><i
-										class="fab fa-twitter"></i></a>
-								<a href="https://www.linkedin.com/"><i
-										class="fab fa-linkedin-in"></i></a>
-								<a href="https://www.whatsapp.com/"><i
-										class="fab fa-whatsapp"></i></a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="heart-rate2" data-bg-src=" {{ asset('frontend/assets/img/shape/preloader3.svg') }}">
-		</div>
-		<div class="heart-rate" data-bg-src=" {{ asset('frontend/assets/img/shape/preloader2.svg') }}">
-
-			<div class="fade-in"></div>
-
-			<div class="fade-out"></div>
-		</div>
-	</footer>
+	@include('frontend.layout.footer')
 
 	<!--********************************
 			Code End  Here

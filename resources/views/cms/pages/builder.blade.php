@@ -69,7 +69,7 @@ if ($currentPageSlug === 'subscription') {
 		@endif
 
 		<div class="row">
-			<div class="col-lg-8 position-relative" style="z-index:2">
+			<div class="col-lg-8 position-relative">
 				<div class="card mb-3">
 					<div class="card-header">
 						<h5 class="card-title mb-0">{{ __('cms.page_content_seo') }}
@@ -343,6 +343,11 @@ if ($currentPageSlug === 'subscription') {
 			</div>
 		</div>
 	</div>
+
+	@include('components.icon-picker', [
+		'renderSharedModal' => true,
+		'sharedModalId' => 'cmsBuilderIconPicker',
+	])
 </div>
 @endsection
 
@@ -427,6 +432,12 @@ if ($currentPageSlug === 'subscription') {
 	max-height: 75vh;
 	object-fit: contain;
 	background: #fff;
+}
+
+#sectionLayoutGuideModal,
+#sectionLayoutZoomModal,
+#iconPickerModal-cmsBuilderIconPicker {
+	z-index: 2005 !important;
 }
 </style>
 @endpush
@@ -804,6 +815,35 @@ if ($currentPageSlug === 'subscription') {
 		$itemCard.find('[data-role="item-collapse"]').attr('id', ic);
 		$itemCard.find('[data-role="item-collapse-toggle"]').attr('data-bs-target', '#' + ic)
 			.attr('aria-controls', ic);
+		syncItemIconPickers($itemCard, si, ii);
+	}
+
+	function syncItemIconPickers($itemCard, si, ii) {
+		var iconBase = 'item-icon-' + si + '-' + ii;
+		$itemCard.find('[data-role="item-lang-tabs"] .tab-pane[role="tabpanel"]').each(function() {
+			var $pane = $(this);
+			var paneId = $pane.attr('id') || '';
+			var langMatch = paneId.match(/-pane-(.+)$/);
+			if (!langMatch) {
+				return;
+			}
+			var lang = langMatch[1];
+			var inputId = iconBase + '-' + lang;
+			var $wrapper = $pane.find('.icon-picker-wrapper').first();
+			if (!$wrapper.length) {
+				return;
+			}
+
+			var $input = $wrapper.find('.icon-picker-input').first();
+			var oldId = $input.attr('id');
+			if (!oldId || oldId === inputId) {
+				return;
+			}
+
+			$input.attr('id', inputId);
+			$wrapper.find('.icon-preview').attr('id', 'preview-' + inputId);
+			$wrapper.find('.clear-icon-btn').attr('data-input', inputId);
+		});
 	}
 
 	function reindexSections() {
@@ -1180,8 +1220,7 @@ if ($currentPageSlug === 'subscription') {
 			'__SIDX__': si,
 			'__IIDX__': ii
 		});
-		var slug = 'item-' + Date.now();
-		$item.find('input[name*="[slug]"]').val(slug);
+		$item.find('input[name*="[slug]"]').val('');
 		$section.find('.items-wrap').append($item);
 		reindexItems($section);
 	});
@@ -1237,6 +1276,10 @@ if ($currentPageSlug === 'subscription') {
 			reindexPageLinks();
 		}
 	});
+
+	if (window.initSharedIconPicker) {
+		window.initSharedIconPicker('cmsBuilderIconPicker');
+	}
 
 	reindexSections();
 	reindexPageLinks();

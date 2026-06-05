@@ -372,4 +372,18 @@ return [
     'notification_demo_requested_subject' => 'New demo request',
     'notification_demo_requested_intro' => 'A visitor submitted a book-demo request.',
     'notification_email_footer' => 'This is an automated message from the system.',
+	'browse_all'=>'Browse All',
+
+    'footer_description' => 'Rundevo is a comprehensive digital ecosystem built to digitize the patient journey. We empower medical centers to automate operations from the initial doctor search to the final service review. ',
+    'quick_links' => 'Quick Links',
+    'support' => 'Support',
+    'download_app' => 'Download App',
+    'all_rights_reserved' => 'All Rights Reserved',
+    'social_media' => 'Social Media',
+    'copyright' => 'Copyright',
+'app_name' => 'Rundevo',
+'mail' => 'Mail',
+'openning_hour' => 'Opening Hours',
+'openning_hours_text' => 'From 8:00 AM to 4:00 PM Monday to Friday',
+'address_text' => 'West Valley of Al-Akwaq, High Road, Al-Oburah, Medina, Saudi Arabia',
 ];

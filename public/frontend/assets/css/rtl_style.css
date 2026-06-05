@@ -6852,7 +6852,10 @@ ol.widget_recent_comments,
   position: absolute;
   font-weight: 900;
   font-family: var(--icon-font);
-  left: 0;
+  left: auto;
+  right: auto;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
   top: 4px;
   width: 16px;
   color: rgba(183, 189, 222, 0.3);

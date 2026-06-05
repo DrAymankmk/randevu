@@ -20,10 +20,10 @@
 								</div>
 								<div class="media-body">
 									<span
-										class="header-info_label">Mail</span>
+										class="header-info_label">{{ __('main.mail') }}</span>
 									<p class="header-info_link">
 										<a
-											href="mailto:medovahealth@gmail.com">medovahealth@gmail.com</a>
+											href="mailto:support@rundevo.net">support@rundevo.net</a>
 									</p>
 								</div>
 							</div>
@@ -35,12 +35,10 @@
 								</div>
 								<div class="media-body">
 									<span
-										class="header-info_label">Address</span>
+										class="header-info_label">{{ __('main.address') }}</span>
 									<p class="header-info_link">
-										562
-										Washington
-										Boulevard,
-										New York
+										{{ __('main.address_text') }}
+
 									</p>
 								</div>
 							</div>
@@ -52,11 +50,9 @@
 								</div>
 								<div class="media-body">
 									<span
-										class="header-info_label">Openning
-										Hour</span>
+										class="header-info_label">{{ __('main.openning_hour') }}</span>
 									<p class="header-info_link">
-										09:30AM-
-										10:30PM
+										{{ __('main.openning_hours_text') }}
 									</p>
 								</div>
 							</div>
@@ -65,12 +61,12 @@
 					</div>
 					<div class="col-auto">
 						<div class="header-button">
-							<form class="search-form">
+							<!-- <form class="search-form">
 								<input type="text"
 									placeholder="{{ __('main.search') }}">
 								<button type="submit"><i
 										class="fa-light fa-magnifying-glass"></i></button>
-							</form>
+							</form> -->
 
 							<!-- <a href="#"
 								class="icon-btn sideMenuToggler d-none d-lg-block"><img
@@ -128,7 +124,8 @@
 							<!-- <a href="contact.html" class="th-btn style2">Make
 								Appointment <i
 									class="fa-solid fa-calendar-days ms-2"></i></a> -->
-							<a href="#" class="th-btn" data-bs-toggle="modal" data-bs-target="#bookDemoModal"><img
+							<a href="#" class="th-btn" data-bs-toggle="modal"
+								data-bs-target="#bookDemoModal"><img
 									src="{{ asset('frontend/assets/img/icon/alarm.svg') }}"
 									alt="">
 								{{ __('main.book_demo') }}</a>

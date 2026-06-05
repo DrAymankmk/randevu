@@ -23,12 +23,12 @@
 						<a href="#" class="th-btn" data-bs-toggle="modal" data-bs-target="#bookDemoModal"><img
 								src="{{ asset('frontend/assets/img/icon/alarm.svg') }}"
 								alt=""> {{ __('main.book_demo') }}</a>
- 						<form class="search-form">
+ 						<!-- <form class="search-form">
  							<input type="text"
  								placeholder="{{ __('main.search') }}">
  							<button type="submit"><i
  									class="fa-light fa-magnifying-glass"></i></button>
- 						</form>
+ 						</form> -->
 
  					</div>
  				</div>

@@ -26515,4 +26515,36 @@ img {
     text-align: left;
 }
 
+[data-icon]:before {
+display:none !important;
+}
+
+/* RTL footer quick links: icon on inline-start (right), text padding on opposite side */
+[dir="rtl"] .footer-widget.widget_meta a,
+[dir="rtl"] .footer-widget.widget_pages a,
+[dir="rtl"] .footer-widget.widget_archive a,
+[dir="rtl"] .footer-widget.widget_categories a,
+[dir="rtl"] .footer-widget.widget_nav_menu a {
+  padding-inline-start: 0;
+  padding-inline-end: 28px;
+}
+
+[dir="rtl"] .footer-widget.widget_meta a:before,
+[dir="rtl"] .footer-widget.widget_pages a:before,
+[dir="rtl"] .footer-widget.widget_archive a:before,
+[dir="rtl"] .footer-widget.widget_categories a:before,
+[dir="rtl"] .footer-widget.widget_nav_menu a:before {
+  left: auto;
+  right: auto;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
+[dir="rtl"] .copyright-wrap .text-lg-end {
+  text-align: start !important;
+}
+
+[dir="rtl"] .footer-layout1 .footer-top-btn .btn-group {
+  justify-content: flex-start !important;
+}
 /*# sourceMappingURL=style.css.map */

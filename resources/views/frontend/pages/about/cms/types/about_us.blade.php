@@ -71,7 +71,7 @@
 //         ]);
 //     }
 @endphp
-<div class="about-area overflow-hidden space-bottom" style="margin: 100px 20px;" id="about-sec">
+<div class="about-area overflow-hidden" style="margin: 100px 20px;" id="about-sec">
     <div class="container">
         <div class="row gy-4">
             <div class="col-xxl-8 mb-30 mb-xl-0">

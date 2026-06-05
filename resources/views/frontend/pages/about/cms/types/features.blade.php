@@ -54,7 +54,7 @@
         ];
     };
 @endphp
-<div class="position-relative space" id="section-{{ $section->id }}">
+<div class="position-relative" id="section-{{ $section->id }}">
     <div class="container">
         @if($st?->title || $st?->subtitle)
             <div class="title-area text-center mb-40">

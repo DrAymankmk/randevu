@@ -115,6 +115,11 @@
                 @empty
                     <div class="col-12 text-center text-muted">{{ __('No services added yet.') }}</div>
                 @endforelse
+		 <div class="text-center mt-60">
+                    <a href="{{route('frontend.services')}}" class="th-btn style2">{{__('main.browse_all')}} 
+
+		<i class="fa-light fa-arrow-right-long ms-2"></i></a>
+                </div>
             </div>
         </div>
     </div>

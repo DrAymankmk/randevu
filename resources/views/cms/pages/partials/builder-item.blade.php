@@ -36,7 +36,8 @@
 							<span class="text-danger">*</span></label>
 						<input type="text" class="form-control form-control-sm"
 							name="sections[{{ $sidx }}][items][{{ $iidx }}][slug]"
-							value="{{ old('sections.'.$sidx.'.items.'.$iidx.'.slug', $item?->slug ?? '') }}">
+							value="{{ old('sections.'.$sidx.'.items.'.$iidx.'.slug', $item?->slug ?? '') }}"
+							placeholder="{{ __('cms.slug') }}">
 					</div>
 					<div class="col-md-2">
 						<label
@@ -73,23 +74,27 @@
 				</div>
 				<hr class="my-2">
 				<div class="row g-3 align-items-start">
-					<div class="col-xl-8">
-						<p class="small text-muted mb-1">{{ __('cms.translations') }}</p>
+					<div class="col-xl-12">
+						<p class="small text-muted mb-1">
+							{{ __('cms.translations') }}</p>
 						@php $itemTabPrefix = 'item-'.$sidx.'-'.$iidx; @endphp
 						@if($languages->isEmpty())
 						<div class="alert alert-warning small mb-0">
 							{{ __('cms.no_languages_configured') }}
 						</div>
 						@else
-						<div data-role="item-lang-tabs" class="item-lang-tabs cms-lang-tabs">
+						<div data-role="item-lang-tabs"
+							class="item-lang-tabs cms-lang-tabs">
 							<ul class="nav nav-tabs mb-2" role="tablist">
 								@foreach($languages as $index => $lang)
-								<li class="nav-item" role="presentation">
+								<li class="nav-item"
+									role="presentation">
 									<button class="nav-link {{ $index === 0 ? 'active' : '' }}"
 										id="{{ $itemTabPrefix }}-tab-{{ $lang->code }}"
 										data-bs-toggle="tab"
 										data-bs-target="#{{ $itemTabPrefix }}-pane-{{ $lang->code }}"
-										type="button" role="tab">
+										type="button"
+										role="tab">
 										{{ $lang->flag ?? '' }}
 										{{ $lang->name }}
 									</button>
@@ -99,7 +104,8 @@
 							<div class="tab-content">
 								@foreach($languages as $index => $lang)
 								@php
-								$tr = $item ? $item->translations->where('locale',
+								$tr = $item ?
+								$item->translations->where('locale',
 								$lang->code)->first() : null;
 								@endphp
 								<div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}"
@@ -107,7 +113,8 @@
 									role="tabpanel"
 									aria-labelledby="{{ $itemTabPrefix }}-tab-{{ $lang->code }}">
 									<div class="row g-2 mb-2">
-										<div class="col-md-3">
+										<div
+											class="col-md-3">
 											<label
 												class="form-label small mb-0">{{ __('cms.title') }}
 												({{ $lang->code }})
@@ -118,7 +125,8 @@
 												value="{{ old('sections.'.$sidx.'.items.'.$iidx.'.translations.'.$lang->code.'.title', $tr->title ?? '') }}"
 												dir="{{ $lang->direction }}">
 										</div>
-										<div class="col-md-3">
+										<div
+											class="col-md-3">
 											<label
 												class="form-label small mb-0">{{ __('cms.subtitle') }}</label>
 											<input type="text"
@@ -127,14 +135,38 @@
 												value="{{ old('sections.'.$sidx.'.items.'.$iidx.'.translations.'.$lang->code.'.sub_title', $tr->sub_title ?? '') }}"
 												dir="{{ $lang->direction }}">
 										</div>
-										<div class="col-md-3">
+										<div
+											class="col-md-6">
 											<label
 												class="form-label small mb-0">{{ __('cms.icon_class') }}</label>
-											<input type="text"
-												class="form-control form-control-sm"
-												name="sections[{{ $sidx }}][items][{{ $iidx }}][translations][{{ $lang->code }}][icon]"
-												value="{{ old('sections.'.$sidx.'.items.'.$iidx.'.translations.'.$lang->code.'.icon', $tr->icon ?? '') }}"
-												placeholder="mdi mdi-…">
+											@php
+											$iconInputId
+											=
+											'item-icon-'.$sidx.'-'.$iidx.'-'.$lang->code;
+											@endphp
+											@include('components.icon-picker',
+											[
+											'inputId'
+											=>
+											$iconInputId,
+											'inputName'
+											=>
+											'sections['.$sidx.'][items]['.$iidx.'][translations]['.$lang->code.'][icon]',
+											'value' =>
+											old('sections.'.$sidx.'.items.'.$iidx.'.translations.'.$lang->code.'.icon',
+											$tr->icon
+											?? ''),
+											'inputClass'
+											=>
+											'form-control
+											form-control-sm
+											icon-picker-input',
+											'compact'
+											=> true,
+											'sharedModalId'
+											=>
+											'cmsBuilderIconPicker',
+											])
 										</div>
 										<div class="col-12">
 											<label
@@ -145,49 +177,70 @@
 												dir="{{ $lang->direction }}">{{ old('sections.'.$sidx.'.items.'.$iidx.'.translations.'.$lang->code.'.content', $tr->content ?? '') }}</textarea>
 										</div>
 										<div class="col-12">
-											<hr class="my-2">
-											<h6 class="small fw-semibold mb-2">
+											<hr
+												class="my-2">
+											<h6
+												class="small fw-semibold mb-2">
 												{{ __('cms.images') }}
 												({{ $lang->name }})
 											</h6>
 											@php
-											$mainImgUrl = ($item ?? null)
+											$mainImgUrl
+											= ($item
+											?? null)
 											?
 											($item->getFirstMediaUrl('images_'.$lang->code)
-											?: null) : null;
-											$iconImgUrl = ($item ?? null)
+											?: null) :
+											null;
+											$iconImgUrl
+											= ($item
+											?? null)
 											?
 											($item->getFirstMediaUrl('icons_'.$lang->code)
-											?: null) : null;
+											?: null) :
+											null;
 											@endphp
-											<div class="row g-3">
-												<div class="col-md-6">
+											<div
+												class="row g-3">
+												<div
+													class="col-md-6">
 													@include('components.image-upload',
 													[
-													'inputId' =>
+													'inputId'
+													=>
 													'item-image-s'.$sidx.'-i'.$iidx.'-'.$lang->code,
-													'inputName' =>
+													'inputName'
+													=>
 													'sections['.$sidx.'][items]['.$iidx.'][translations]['.$lang->code.'][image]',
-													'collection' =>
+													'collection'
+													=>
 													'images_'.$lang->code,
-													'label' =>
+													'label'
+													=>
 													__('cms.main_image'),
-													'existingImage' =>
+													'existingImage'
+													=>
 													$mainImgUrl,
 													])
 												</div>
-												<div class="col-md-6">
+												<div
+													class="col-md-6">
 													@include('components.image-upload',
 													[
-													'inputId' =>
+													'inputId'
+													=>
 													'item-iconimg-s'.$sidx.'-i'.$iidx.'-'.$lang->code,
-													'inputName' =>
+													'inputName'
+													=>
 													'sections['.$sidx.'][items]['.$iidx.'][translations]['.$lang->code.'][icon_image]',
-													'collection' =>
+													'collection'
+													=>
 													'icons_'.$lang->code,
-													'label' =>
+													'label'
+													=>
 													__('cms.icon_image'),
-													'existingImage' =>
+													'existingImage'
+													=>
 													$iconImgUrl,
 													])
 												</div>
@@ -200,7 +253,7 @@
 						</div>
 						@endif
 					</div>
-					<div class="col-xl-4">
+					<!-- <div class="col-xl-4">
 						<div class="mt-4 mt-xl-0">
 							@include('components.gallery-upload', [
 							'deferGalleryInit' => true,
@@ -212,7 +265,7 @@
 							collect([]),
 							])
 						</div>
-					</div>
+					</div> -->
 				</div>
 				<hr class="my-2">
 				<div class="d-flex justify-content-between align-items-center mb-1">
