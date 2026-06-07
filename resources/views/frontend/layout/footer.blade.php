@@ -94,6 +94,8 @@
 									</li>
 									<li><a href="{{ route('frontend.contact') }}">{{ __('main.contact') }}</a>
 									</li>
+									<li><a href="{{ route('frontend.social') }}">{{ __('main.social_media') }}</a>
+									</li>
 								</ul>
 							</div>
 						</div>
@@ -131,7 +133,7 @@
 											support@rundevo.net</a></span>
 								</p>
 								<p class="footer-info"><i
-										class="fas fa-map-marker-alt"></i>West
+										class="fas fa-map-marker-alt"></i>
 									{{ __('main.address_text') }}
 								</p>
 							</div>
@@ -183,21 +185,8 @@
 									{{ __('main.all_rights_reserved') }}
 								</p>
 							</div>
-							<div class="col-lg-7 text-center">
-								<div class="social-links">
-									<span
-										class="title">{{ __('main.social_media') }}</span>
-									<a
-										href="instagram.com/runde_vo?igsh=MW04Y2drcmc3cWZnYw=="><i
-											class="fab fa-instagram"></i></a>
-									<a
-										href="https://www.snapchat.com/@rundev"><i
-											class="fab fa-snapchat"></i></a>
-									<a
-										href="https://www.tiktok.com/@rundevo.app?_r=1&_t=ZS96UFX8pfLfg"><i
-											class="fab fa-tiktok"></i></a>
-
-								</div>
+							<div class="col-lg-7 text-center text-lg-end">
+								@include('frontend.layout.partials.social-links')
 							</div>
 						</div>
 					</div>

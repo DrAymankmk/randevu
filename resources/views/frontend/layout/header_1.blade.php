@@ -110,13 +110,19 @@
 									<li><a href="{{ route('frontend.contact') }}">
 											{{ __('main.contact') }}</a>
 									</li>
+									<li><a href="{{ route('frontend.social') }}">
+											{{ __('main.social_media') }}</a>
+									</li>
 									<!-- multi language menu -->
 									@include('frontend.layout.partials.multi-language-menu')
 
 								</ul>
 							</nav>
-							<a href="contact.html" class="th-btn style2">Make
-								Appointment</a>
+							<a href="#" class="th-btn" data-bs-toggle="modal"
+								data-bs-target="#bookDemoModal"><img
+									src="{{ asset('frontend/assets/img/icon/alarm.svg') }}"
+									alt="">
+								{{ __('main.book_demo') }}</a>
 						</div>
 					</div>
 					<div class="col-auto">

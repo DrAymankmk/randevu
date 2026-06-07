@@ -292,13 +292,27 @@
 					</div>
 				</div>
 				@endif
-				@include('components.image-upload', [
-				'inputId' => 'section-image-'.$sidx,
-				'inputName' => 'sections['.$sidx.'][image]',
-				'collection' => 'images',
-				'label' => __('cms.main_image'),
-				'existingImage' => ($section ?? null) ? $section->getFirstMediaUrl('images') :
-				null,
+				@php
+				$sectionExistingImages = collect();
+				if ($section ?? null) {
+					$mainSectionImage = $section->getFirstMedia('images');
+					if ($mainSectionImage) {
+						$sectionExistingImages->push($mainSectionImage);
+					}
+					foreach ($section->getMedia('gallery') as $media) {
+						if (! $sectionExistingImages->contains('id', $media->id)) {
+							$sectionExistingImages->push($media);
+						}
+					}
+				}
+				@endphp
+				@include('components.gallery-upload', [
+				'deferGalleryInit' => true,
+				'inputId' => 'section-gallery-'.$sidx,
+				'inputName' => 'sections['.$sidx.'][gallery]',
+				'collection' => 'gallery',
+				'label' => __('cms.gallery_images'),
+				'existingImages' => $sectionExistingImages,
 				])
 				<hr>
 				<div class="d-flex justify-content-between align-items-center mb-2">

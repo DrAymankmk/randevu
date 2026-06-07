@@ -870,22 +870,13 @@ if ($currentPageSlug === 'subscription') {
 					si + ']');
 			});
 			syncSectionBuilderIds($card, si);
-			var sectionImageId = 'section-image-' + si;
-			var sectionPreviewId = 'preview_' + sectionImageId;
-			var $sectionImageWrap = $card.find('.image-upload-wrapper').filter(function() {
+			var sectionGalleryId = 'section-gallery-' + si;
+			var $sectionGalleryWrap = $card.find('.gallery-upload-container').filter(function() {
 				return $(this).closest('.item-card').length === 0;
 			}).first();
-			if ($sectionImageWrap.length) {
-				var $input = $sectionImageWrap.find('input[type=file]').first();
-				var $preview = $sectionImageWrap.find('.image-preview-container').first();
-				$input.attr('id', sectionImageId);
-				$input.attr('onchange', "previewImage(this, '" + sectionPreviewId + "')");
-				$preview.attr('id', sectionPreviewId);
-				$preview.find('img').first().attr('id', sectionPreviewId + '_img');
-				$sectionImageWrap.find('.image-preview-container button').first().attr(
-					'onclick',
-					"removeImagePreview('" + sectionPreviewId + "', '" + sectionImageId + "')"
-				);
+			if ($sectionGalleryWrap.length) {
+				$sectionGalleryWrap.find('input.gallery-input').attr('id', sectionGalleryId);
+				$sectionGalleryWrap.find('.gallery-preview').attr('id', 'gallery-preview-' + sectionGalleryId);
 			}
 			reindexItemImagesAndGallery($card);
 			refreshSectionCardUI($card);
@@ -899,6 +890,14 @@ if ($currentPageSlug === 'subscription') {
 		}
 	}
 
+	function isGalleryImageFile(file) {
+		return file.type && file.type.startsWith('image/');
+	}
+
+	function isGalleryVideoFile(file) {
+		return file.type && file.type.startsWith('video/');
+	}
+
 	function rebuildSectionGalleryPreviews(input) {
 		var $wrap = $(input).closest('.gallery-upload-container');
 		var preview = $wrap.find('.gallery-preview')[0];
@@ -907,17 +906,24 @@ if ($currentPageSlug === 'subscription') {
 		}
 		$(preview).find('.gallery-item[data-file-name]').remove();
 		Array.from(input.files).forEach(function(file) {
-			if (!file.type || !file.type.startsWith('image/')) {
+			if (!isGalleryImageFile(file) && !isGalleryVideoFile(file)) {
+				return;
+			}
+			var div = document.createElement('div');
+			div.className = 'gallery-item';
+			div.setAttribute('data-file-name', file.name);
+			if (isGalleryVideoFile(file)) {
+				var videoUrl = URL.createObjectURL(file);
+				div.innerHTML = '<video src="' + videoUrl +
+					'" class="img-thumbnail gallery-video-preview" muted playsinline></video>' +
+					'<span class="gallery-media-badge">{{ __("cms.video") }}</span>' +
+					'<button type="button" class="btn btn-sm btn-danger gallery-remove-new"><i class="mdi mdi-delete"></i></button>';
+				preview.appendChild(div);
 				return;
 			}
 			var reader = new FileReader();
 			reader.onload = function(e) {
-				var div = document.createElement('div');
-				div.className = 'gallery-item';
-				div.setAttribute('data-file-name', file
-					.name);
-				div.innerHTML = '<img src="' + e.target
-					.result +
+				div.innerHTML = '<img src="' + e.target.result +
 					'" alt="" class="img-thumbnail">' +
 					'<button type="button" class="btn btn-sm btn-danger gallery-remove-new"><i class="mdi mdi-delete"></i></button>';
 				preview.appendChild(div);

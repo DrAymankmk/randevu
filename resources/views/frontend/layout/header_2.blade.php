@@ -4,19 +4,51 @@
  			<div
  				class="row gy-2 justify-content-center justify-content-lg-between align-items-center">
  				<div class="col-auto">
- 					<div class="header-links">
- 						<ul>
- 							<li><i class="fa-solid fa-envelope"></i><a
- 									href="mailto:medovahealth@gmail.com">medovahealth@gmail.com</a>
- 							</li>
- 							<li class="d-none d-md-inline-block"><i
- 									class="fa-solid fa-location-dot"></i>
- 								<span>562 Washington Boulevard, New
- 									York</span>
- 							</li>
+ 					<div class="header-info-wrap">
+							<div class="header-info">
+								<div class="header-info_icon">
+									<i
+										class="fa-solid fa-envelope"></i>
+								</div>
+								<div class="media-body">
+									<span
+										class="header-info_label">{{ __('main.mail') }}</span>
+									<p class="header-info_link">
+										<a
+											href="mailto:support@rundevo.net">support@rundevo.net</a>
+									</p>
+								</div>
+							</div>
+							<div class="divided"></div>
+							<div class="header-info">
+								<div class="header-info_icon">
+									<i
+										class="fa-solid fa-location-dot"></i>
+								</div>
+								<div class="media-body">
+									<span
+										class="header-info_label">{{ __('main.address') }}</span>
+									<p class="header-info_link">
+										{{ __('main.address_text') }}
 
- 						</ul>
- 					</div>
+									</p>
+								</div>
+							</div>
+							<div class="divided"></div>
+							<div class="header-info">
+								<div class="header-info_icon">
+									<i
+										class="fa-solid fa-clock"></i>
+								</div>
+								<div class="media-body">
+									<span
+										class="header-info_label">{{ __('main.openning_hour') }}</span>
+									<p class="header-info_link">
+										{{ __('main.openning_hours_text') }}
+									</p>
+								</div>
+							</div>
+						</div>
  				</div>
  				<div class="col-auto">
  					<div class="header-button">
@@ -68,9 +100,12 @@
  										{{ __('main.subscription') }}</a>
  								</li>
 
- 								<li><a href="{{ route('frontend.contact') }}">
- 										{{ __('main.contact') }}</a>
- 								</li>
+								<li><a href="{{ route('frontend.contact') }}">
+										{{ __('main.contact') }}</a>
+								</li>
+								<li><a href="{{ route('frontend.social') }}">
+										{{ __('main.social_media') }}</a>
+								</li>
  								<!-- multi language menu -->
  								@include('frontend.layout.partials.multi-language-menu')
 

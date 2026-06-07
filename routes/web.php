@@ -95,6 +95,7 @@ Route::group(['namespace' => 'Frontend', 'middleware' => 'setlocale' , 'as' => '
     Route::get('/subscription', 'SubscriptionController@index')->name('subscription');
     Route::post('/subscription/register', 'SubscriptionController@registerClinic')->name('subscription.register');
 	Route::get('/contact', 'ContactController@index')->name('contact');
+    Route::get('/social-media', 'SocialMediaController@index')->name('social');
     Route::post('/book-demo', 'ContactController@bookDemo')->name('book_demo');
     Route::post('/contact', 'ContactController@submitContact')->name('contact.submit');
  Route::get('language/{lang}', function (string $lang) {

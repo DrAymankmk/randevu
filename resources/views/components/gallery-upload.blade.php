@@ -1,21 +1,34 @@
 @php
+    use App\Support\Cms\CmsGalleryMedia;
+
     $deferGalleryInit = $deferGalleryInit ?? false;
+    $acceptTypes = implode(',', array_merge(
+        array_map(fn ($ext) => '.'.$ext, CmsGalleryMedia::IMAGE_EXTENSIONS),
+        array_map(fn ($ext) => '.'.$ext, CmsGalleryMedia::VIDEO_EXTENSIONS)
+    ));
 @endphp
 <div class="mb-3">
     <label class="form-label">{{ $label ?? __('Gallery') }}</label>
     <div class="gallery-upload-container" data-collection="{{ $collection }}">
-        <input type="file" 
-               id="{{ $inputId }}" 
-               name="{{ $inputName }}[]" 
-               class="form-control gallery-input" 
-               accept="image/*" 
+        <input type="file"
+               id="{{ $inputId }}"
+               name="{{ $inputName }}[]"
+               class="form-control gallery-input"
+               accept="{{ $acceptTypes }}"
                multiple>
-        
+
+        <small class="text-muted d-block mt-1">{{ __('cms.gallery_media_hint') }}</small>
+
         <div class="gallery-preview mt-3" id="gallery-preview-{{ $inputId }}">
             @if(isset($existingImages) && $existingImages->count() > 0)
                 @foreach($existingImages as $image)
                 <div class="gallery-item" data-media-id="{{ $image->id }}">
-                    <img src="{{ $image->getUrl('thumb') ?? $image->getUrl() }}" alt="{{ $image->name }}" class="img-thumbnail">
+                    @if(CmsGalleryMedia::isVideo($image))
+                        <video src="{{ CmsGalleryMedia::previewUrl($image) }}" class="img-thumbnail gallery-video-preview" muted playsinline></video>
+                        <span class="gallery-media-badge">{{ __('cms.video') }}</span>
+                    @else
+                        <img src="{{ CmsGalleryMedia::previewUrl($image) }}" alt="{{ $image->name }}" class="img-thumbnail">
+                    @endif
                     <button type="button" class="btn btn-sm btn-danger gallery-remove-existing" data-media-id="{{ $image->id }}" data-collection="{{ $collection }}">
                         <i class="mdi mdi-delete"></i>
                     </button>
@@ -38,15 +51,27 @@
         position: relative;
         display: inline-block;
     }
-    .gallery-item img {
+    .gallery-item img,
+    .gallery-item video.gallery-video-preview {
         width: 150px;
         height: 150px;
         object-fit: cover;
+        display: block;
     }
     .gallery-item .btn {
         position: absolute;
         top: 5px;
         right: 5px;
+    }
+    .gallery-media-badge {
+        position: absolute;
+        left: 5px;
+        bottom: 5px;
+        background: rgba(0, 0, 0, 0.65);
+        color: #fff;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 4px;
     }
 </style>
 @endpush
@@ -61,67 +86,86 @@
         var previewContainer = document.getElementById('gallery-preview-' + inputId);
         var collection = '{{ $collection }}';
         var selectedFiles = [];
-        
+
+        function isGalleryImage(file) {
+            return file.type && file.type.startsWith('image/');
+        }
+
+        function isGalleryVideo(file) {
+            return file.type && file.type.startsWith('video/');
+        }
+
+        function appendGalleryPreview(file) {
+            var galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.setAttribute('data-file-name', file.name);
+
+            if (isGalleryVideo(file)) {
+                var videoUrl = URL.createObjectURL(file);
+                galleryItem.innerHTML =
+                    '<video src="' + videoUrl + '" class="img-thumbnail gallery-video-preview" muted playsinline></video>' +
+                    '<span class="gallery-media-badge">{{ __("cms.video") }}</span>' +
+                    '<button type="button" class="btn btn-sm btn-danger gallery-remove-new"><i class="mdi mdi-delete"></i></button>';
+                previewContainer.appendChild(galleryItem);
+                bindRemoveNew(galleryItem, file);
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                galleryItem.innerHTML =
+                    '<img src="' + e.target.result + '" alt="Preview" class="img-thumbnail">' +
+                    '<button type="button" class="btn btn-sm btn-danger gallery-remove-new"><i class="mdi mdi-delete"></i></button>';
+                previewContainer.appendChild(galleryItem);
+                bindRemoveNew(galleryItem, file);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function bindRemoveNew(galleryItem, file) {
+            galleryItem.querySelector('.gallery-remove-new').addEventListener('click', function() {
+                selectedFiles = selectedFiles.filter(function(f) {
+                    return f.name !== file.name;
+                });
+
+                var dt = new DataTransfer();
+                selectedFiles.forEach(function(f) {
+                    dt.items.add(f);
+                });
+                input.files = dt.files;
+                galleryItem.remove();
+            });
+        }
+
         function initGallery() {
             if (!input || !previewContainer) {
                 return;
             }
-            
-            // Handle new file selection
-            input.addEventListener('change', function(e) {
-                var files = Array.from(e.target.files);
-                files.forEach(function(file, index) {
-                    if (file.type.startsWith('image/')) {
-                        selectedFiles.push(file);
-                        var reader = new FileReader();
-                        reader.onload = (function(file) {
-                            return function(e) {
-                                var galleryItem = document.createElement('div');
-                                galleryItem.className = 'gallery-item';
-                                galleryItem.setAttribute('data-file-name', file.name);
-                                galleryItem.innerHTML = `
-                                    <img src="${e.target.result}" alt="Preview" class="img-thumbnail">
-                                    <button type="button" class="btn btn-sm btn-danger gallery-remove-new">
-                                        <i class="mdi mdi-delete"></i>
-                                    </button>
-                                `;
-                                previewContainer.appendChild(galleryItem);
-                                
-                                // Remove button functionality
-                                galleryItem.querySelector('.gallery-remove-new').addEventListener('click', function() {
-                                    // Remove from selectedFiles array
-                                    selectedFiles = selectedFiles.filter(function(f) {
-                                        return f.name !== file.name;
-                                    });
-                                    
-                                    // Update input files
-                                    var dt = new DataTransfer();
-                                    selectedFiles.forEach(function(f) {
-                                        dt.items.add(f);
-                                    });
-                                    input.files = dt.files;
-                                    
-                                    galleryItem.remove();
-                                });
-                            };
-                        })(file);
-                        reader.readAsDataURL(file);
+
+            input.addEventListener('change', function() {
+                Array.from(input.files).forEach(function(file) {
+                    if (!isGalleryImage(file) && !isGalleryVideo(file)) {
+                        return;
                     }
+                    if (selectedFiles.some(function(f) { return f.name === file.name; })) {
+                        return;
+                    }
+                    selectedFiles.push(file);
+                    appendGalleryPreview(file);
                 });
             });
         }
-        
-        // Handle removal of existing images
+
         function initExistingImageRemoval() {
             var removeButtons = document.querySelectorAll('.gallery-remove-existing[data-collection="' + collection + '"]');
             removeButtons.forEach(function(button) {
                 button.addEventListener('click', function() {
                     var mediaId = this.getAttribute('data-media-id');
                     var galleryItem = this.closest('.gallery-item');
-                    
+
                     Swal.fire({
                         title: '{{ __("Are you sure?") }}',
-                        text: '{{ __("You won't be able to revert this!") }}',
+                        text: '{{ __("You won\'t be able to revert this!") }}',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
@@ -129,7 +173,6 @@
                         confirmButtonText: '{{ __("Yes, delete it!") }}'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Delete via AJAX
                             fetch('{{ route("cms.media.index") }}/' + mediaId, {
                                 method: 'DELETE',
                                 headers: {
@@ -154,7 +197,7 @@
                 });
             });
         }
-        
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 initGallery();
@@ -168,4 +211,3 @@
 </script>
 @endpush
 @endunless
-

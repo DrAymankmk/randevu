@@ -712,7 +712,14 @@
         return this;
     };
 
-    $(".discount-anime").lettering();
+    $(".discount-anime").each(function () {
+        var $el = $(this);
+        if ($el.hasClass("discount-anime-plain") || $("html").attr("dir") === "rtl") {
+            $el.addClass("discount-anime-plain");
+            return;
+        }
+        $el.lettering();
+    });
 
 
     /*---------- 13. Section Position ----------*/

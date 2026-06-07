@@ -8,6 +8,7 @@ use App\Models\CmsSection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Support\Cms\CmsGalleryMedia;
 
 class CmsSectionController extends Controller
 {
@@ -123,7 +124,7 @@ class CmsSectionController extends Controller
             'translations.*.description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery' => 'nullable|array',
-            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
         ]);
 
         $section = CmsSection::create([
@@ -220,6 +221,8 @@ class CmsSectionController extends Controller
             'translations.*.description' => 'nullable|string',
             'translations.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'gallery' => 'nullable|array',
+            'gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
         ]);
 
         $section = CmsSection::find($id);

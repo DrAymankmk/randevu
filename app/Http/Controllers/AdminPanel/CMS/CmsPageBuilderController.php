@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminPanel\CMS;
 
 use App\Http\Controllers\Controller;
 use App\Models\CmsItem;
+use App\Support\Cms\CmsGalleryMedia;
 use App\Models\CmsLanguage;
 use App\Models\CmsLink;
 use App\Models\CmsPage;
@@ -74,7 +75,7 @@ class CmsPageBuilderController extends Controller
                 ]);
                 $this->syncSectionTranslations($section, $sec['translations'] ?? []);
                 $this->syncMorphLinks($section, $sec['links'] ?? []);
-                $this->syncSectionImageUpload($request, $order, $section);
+                $this->syncSectionGalleryFromRequest($request, $order, $section);
 
                 foreach ($sec['items'] ?? [] as $iOrder => $itemRow) {
                     $item = $section->items()->create([
@@ -153,7 +154,7 @@ class CmsPageBuilderController extends Controller
                 $keptSectionIds[] = $section->id;
                 $this->syncSectionTranslations($section, $sec['translations'] ?? []);
                 $this->syncMorphLinks($section, $sec['links'] ?? []);
-                $this->syncSectionImageUpload($request, $order, $section);
+                $this->syncSectionGalleryFromRequest($request, $order, $section);
 
                 $keptItemIds = [];
                 foreach ($sec['items'] ?? [] as $iOrder => $itemRow) {
@@ -256,7 +257,8 @@ class CmsPageBuilderController extends Controller
             'sections.*.settings' => ['nullable', 'array'],
             'sections.*.order' => ['nullable', 'integer', 'min:0'],
             'sections.*.is_active' => ['nullable', 'boolean'],
-            'sections.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'sections.*.gallery' => ['nullable', 'array'],
+            'sections.*.gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
             'sections.*.links' => ['nullable', 'array'],
             'sections.*.links.*.name' => ['nullable', 'string', 'max:255'],
             'sections.*.links.*.link' => ['nullable', 'string', 'max:2048'],
@@ -272,7 +274,7 @@ class CmsPageBuilderController extends Controller
             'sections.*.items.*.order' => ['nullable', 'integer', 'min:0'],
             'sections.*.items.*.is_active' => ['nullable', 'boolean'],
             'sections.*.items.*.gallery' => ['nullable', 'array'],
-            'sections.*.items.*.gallery.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+            'sections.*.items.*.gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
             'sections.*.items.*.translations.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
             'sections.*.items.*.translations.*.icon_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp,svg', 'max:2048'],
         ];
@@ -376,16 +378,42 @@ class CmsPageBuilderController extends Controller
         }
     }
 
-    private function syncSectionImageUpload(Request $request, int $sectionIndex, CmsSection $section): void
+    private function syncSectionGalleryFromRequest(Request $request, int $sectionIndex, CmsSection $section): void
     {
-        $file = $request->file('sections.'.$sectionIndex.'.image');
-
-        if (! $file || ! $file->isValid()) {
+        $galleryFiles = $request->file("sections.{$sectionIndex}.gallery");
+        if ($galleryFiles === null) {
             return;
         }
 
-        $section->clearMediaCollection('images');
-        $section->addMedia($file)->toMediaCollection('images');
+        if (! is_array($galleryFiles)) {
+            $galleryFiles = [$galleryFiles];
+        }
+
+        $added = false;
+        foreach ($galleryFiles as $file) {
+            if ($file && $file->isValid()) {
+                $section->addMedia($file)->toMediaCollection('gallery');
+                $added = true;
+            }
+        }
+
+        if ($added) {
+            $this->syncSectionPrimaryImageFromGallery($section);
+        }
+    }
+
+    private function syncSectionPrimaryImageFromGallery(CmsSection $section): void
+    {
+        if ($section->getFirstMedia('images')) {
+            return;
+        }
+
+        $firstImage = $section->getMedia('gallery')->first(
+            fn ($media) => CmsGalleryMedia::isImage($media)
+        );
+        if ($firstImage) {
+            $firstImage->copy($section, 'images');
+        }
     }
 
     private function syncItemTranslations(CmsItem $item, array $translations): void

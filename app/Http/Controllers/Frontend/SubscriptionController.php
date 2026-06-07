@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -74,7 +75,8 @@ class SubscriptionController extends Controller
     {
         $attributes = [
             'clinic_name' => __('main.clinic_name'),
-            'specialist' => __('main.select_specialist'),
+            'specialist' => __('main.select_specialists'),
+            'specialist.*' => __('main.select_specialists'),
             'address' => __('main.address'),
             'phone_number' => __('main.phone_number'),
             'alternative_number' => __('main.alternative_number'),
@@ -92,7 +94,14 @@ class SubscriptionController extends Controller
             $request->all(),
             [
                 'clinic_name' => 'required|string|max:255',
-                'specialist' => 'required|integer|exists:specialties,id',
+                'specialist' => 'required|array|min:1',
+                'specialist.*' => [
+                    'integer',
+                    'distinct',
+                    Rule::exists('specialties', 'id')->where(static function ($query) {
+                        $query->whereNull('parent_id')->whereNull('deleted_at');
+                    }),
+                ],
                 'address' => 'required|string|max:500',
                 'phone_number' => 'required|string|max:50',
                 'alternative_number' => 'nullable|string|max:50',
@@ -110,7 +119,10 @@ class SubscriptionController extends Controller
                 'password' => 'required|string|min:8|max:255',
                 'package' => 'required|integer|exists:packages,id',
             ],
-            [],
+            [
+                'specialist.required' => __('main.Please select at least one specialty'),
+                'specialist.min' => __('main.Please select at least one specialty'),
+            ],
             $attributes
         );
 
@@ -171,11 +183,24 @@ class SubscriptionController extends Controller
                 'date_created' => now()->toDateString(),
             ]);
 
-            ClinicSpecialist::create([
-                'clinic_id' => $clinic->id,
-                'specialty_id' => (int) $request->input('specialist'),
-                'type' => 1,
-            ]);
+            $specialistIds = collect($request->input('specialist', []))
+                ->map(static fn ($id) => (int) $id)
+                ->filter()
+                ->unique()
+                ->values();
+
+            foreach ($specialistIds as $specialtyId) {
+                ClinicSpecialist::updateOrCreate(
+                    [
+                        'clinic_id' => $clinic->id,
+                        'specialty_id' => $specialtyId,
+                        'type' => 1,
+                    ],
+                    [
+                        'status' => 1,
+                    ]
+                );
+            }
 
             SubscriptionsPackageClinic::create([
                 'clinic_id' => $clinic->id,
@@ -187,11 +212,19 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
-            event(new ClinicRegistered($clinic, $package, [
-                'admin_name' => $request->input('admin_name'),
-                'admin_email' => $request->input('admin_email'),
-                'admin_phone' => $request->input('admin_phone'),
-            ]));
+            try {
+                event(new ClinicRegistered($clinic, $package, [
+                    'admin_name' => $request->input('admin_name'),
+                    'admin_email' => $request->input('admin_email'),
+                    'admin_phone' => $request->input('admin_phone'),
+                ]));
+            } catch (\Throwable $notificationError) {
+                report($notificationError);
+                Log::warning('Clinic registered but system notification failed.', [
+                    'clinic_id' => $clinic->id,
+                    'message' => $notificationError->getMessage(),
+                ]);
+            }
 
             return redirect()
                 ->route('frontend.subscription')
@@ -256,16 +289,19 @@ class SubscriptionController extends Controller
 
     private function resolveExceptionCauses(\Throwable $e, bool $isDatabase): array
     {
-        $causes = [$isDatabase ? __('main.registration_database_error') : __('main.registration_failed')];
-
         if (config('app.debug')) {
-            $causes[] = __('main.registration_error_detail', ['message' => $e->getMessage()]);
+            $causes = [
+                __('main.registration_error_detail', ['message' => $e->getMessage()]),
+            ];
+
             if ($e->getPrevious()) {
                 $causes[] = __('main.registration_error_previous', ['message' => $e->getPrevious()->getMessage()]);
             }
+
+            return $causes;
         }
 
-        return $causes;
+        return [$isDatabase ? __('main.registration_database_error') : __('main.registration_failed')];
     }
 
     private function storeMedicalLicense($file): string

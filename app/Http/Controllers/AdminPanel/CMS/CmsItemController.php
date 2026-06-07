@@ -8,6 +8,7 @@ use App\Models\CmsLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Support\Cms\CmsGalleryMedia;
 
 class CmsItemController extends Controller
 {
@@ -115,6 +116,8 @@ class CmsItemController extends Controller
             'translations.*.icon' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+            'gallery' => 'nullable|array',
+            'gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
         ]);
 
         $item = CmsItem::create([
@@ -211,6 +214,8 @@ class CmsItemController extends Controller
             'translations.*.icon_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+            'gallery' => 'nullable|array',
+            'gallery.*' => ['nullable', CmsGalleryMedia::fileRule()],
         ]);
 
         $item->update([

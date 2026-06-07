@@ -119,7 +119,7 @@ class CmsItem extends Model implements HasMedia
             ->singleFile();
 
         $this->addMediaCollection('gallery')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+            ->acceptsMimeTypes(\App\Support\Cms\CmsGalleryMedia::allMimeTypes());
     }
 
     /**
@@ -133,13 +133,13 @@ class CmsItem extends Model implements HasMedia
             ->sharpen(10)
             ->nonOptimized()
             ->nonQueued()
-            ->performOnCollections('images', 'gallery');
+            ->performOnCollections('images');
 
         $this->addMediaConversion('preview')
             ->width(800)
             ->height(600)
             ->nonOptimized()
             ->nonQueued()
-            ->performOnCollections('images', 'gallery');
+            ->performOnCollections('images');
     }
 }

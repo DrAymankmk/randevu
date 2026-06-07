@@ -6,9 +6,12 @@ $title = $st?->title ?: __('Expert Doctors, Seamless Appointments, Quality Care'
 $sub = $st?->subtitle ?: __('About us');
 $desc = $st?->description ?: '<p class="fs-18 mb-30 wow fadeInUp" data-wow-delay=".1s">' . e(__('A belief that knowledge
 	is power—we connect our patients with their results and quality care when they need it most.')) . '</p>';
+$descHasListItems = stripos($desc, '<li') !== false;
 $img = $section->getMediaUrl('images', $locale, asset('frontend/assets/img/normal/about_1_1.jpg'), true);
 
-$specialists = \App\Models\Specialty::where('parent_id', null)->where('deleted_at', null)->get();
+$specialists = \App\Models\Specialty::whereNull('parent_id')->whereNull('deleted_at')->orderBy('id')->get();
+$oldSpecialists = array_map('strval', old('specialist', []));
+$subscriptionIsRtl = in_array(explode('-', strtolower(str_replace('_', '-', $locale)))[0], ['ar', 'fa', 'he', 'ur'], true);
 
 $packages = $packages ?? \App\Models\Package::query()->where('status', 1)->orderBy('price')->get();
 $selectedPackageId = old('package', $selectedPackageId ?? (request()->filled('package') ? (int)
@@ -137,7 +140,7 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 
 									<div>
 										<div
-											class="cms-about-desc">
+											class="cms-about-desc{{ $descHasListItems ? ' checklist' : '' }}">
 											{!! $desc
 											!!}</div>
 										<div class="btn-group mt-40 wow fadeInUp"
@@ -173,7 +176,7 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 							@php
 							$registrationFieldLabels = [
 							'clinic_name' => __('main.clinic_name'),
-							'specialist' => __('main.select_specialist'),
+							'specialist' => __('main.select_specialists'),
 							'address' => __('main.address'),
 							'phone_number' => __('main.phone_number'),
 							'alternative_number' =>
@@ -203,7 +206,7 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 							}
 							@endphp
 							<form method="POST"
-								action="{{ route('frontend.subscription.register') }}"
+								action="/subscription/register"
 								enctype="multipart/form-data"
 								id="clinic-registration-form"
 								novalidate>
@@ -350,30 +353,25 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 											</div>
 										</div>
 										<div class="form-group col-12"
-											data-field-wrap="specialist">
-											<select name="specialist"
-												class="form-select nice-select @error('specialist') is-invalid @enderror"
-												data-validate="required">
-												<option value=""
-													disabled
-													@if(!old('specialist'))
-													selected
-													@endif
-													hidden>
-													{{ __('main.select_specialist') }}
-												</option>
+											data-field-wrap="specialist"
+											data-validate-group="specialist">
+											<label class="form-label mb-2" for="specialist-select">{{ __('main.select_specialists') }}</label>
+											<select id="specialist-select"
+												name="specialist[]"
+												class="form-select specialist-select2 @error('specialist') is-invalid @enderror @error('specialist.*') is-invalid @enderror"
+												multiple
+												data-placeholder="{{ __('main.select_specialists') }}">
 												@foreach($specialists as $specialist)
 												<option value="{{ $specialist->id }}"
-													@if((string)
-													old('specialist')===(string) $specialist->id)
-													selected
-													@endif>{{ app()->getLocale() === 'ar' ? $specialist->name_ar : $specialist->name_en }}
+													@if(in_array((string) $specialist->id, $oldSpecialists, true)) selected @endif>
+													{{ app()->getLocale() === 'ar' ? $specialist->name_ar : $specialist->name_en }}
 												</option>
 												@endforeach
 											</select>
 											<div class="invalid-feedback"
 												data-field-error="specialist">
 												@error('specialist'){{ $message }}@enderror
+												@error('specialist.*'){{ $message }}@enderror
 											</div>
 										</div>
 										<div class="form-group col-12"
@@ -632,6 +630,8 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 								<p class="form-messages mb-0 mt-3"></p>
 							</form>
 
+							<link rel="stylesheet" href="{{ asset('admin/css/select2.css') }}">
+
 							<style>
 							.step-indicators {
 								display: flex;
@@ -864,6 +864,40 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 
 							#clinic-registration-form .form-group.has-error .nice-select {
 								border-color: #dc3545
+							}
+
+							#clinic-registration-form .specialist-select2 {
+								width: 100%
+							}
+
+							#clinic-registration-form .select2-container--default .select2-selection--multiple {
+								min-height: 48px;
+								border: 1px solid #e5e7eb;
+								border-radius: .5rem;
+								padding: 4px 8px;
+								background: #fff
+							}
+
+							#clinic-registration-form .select2-container--default .select2-selection--multiple .select2-selection__choice {
+								background-color: var(--theme-color, #3b82f6);
+								border-color: var(--theme-color, #3b82f6);
+								color: #fff;
+								border-radius: .35rem;
+								padding: 2px 8px
+							}
+
+							#clinic-registration-form .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+								color: #fff;
+								margin-inline-end: 4px
+							}
+
+							#clinic-registration-form .form-group.has-error .select2-container--default .select2-selection--multiple,
+							#clinic-registration-form .select2-container--default .select2-selection--multiple.is-invalid {
+								border-color: #dc3545
+							}
+
+							html[dir="rtl"] #clinic-registration-form .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+								text-align: right
 							}
 							</style>
 
@@ -1109,6 +1143,87 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 									return true;
 								}
 
+								function setSpecialistSelectInvalid(select, isInvalid) {
+									if (!select) {
+										return;
+									}
+									select.classList.toggle('is-invalid', isInvalid);
+									if (typeof jQuery !== 'undefined') {
+										jQuery(select).next('.select2-container').find('.select2-selection--multiple')
+											.toggleClass('is-invalid', isInvalid);
+									}
+								}
+
+								function validateSpecialistGroup(wrap) {
+									var select = wrap.querySelector('#specialist-select');
+									var feedback = wrap.querySelector('[data-field-error="specialist"]');
+									var hasSelection = select && select.selectedOptions && select.selectedOptions.length > 0;
+									if (hasSelection) {
+										wrap.classList.remove('has-error');
+										setSpecialistSelectInvalid(select, false);
+										if (feedback && !feedback.hasAttribute('data-server-error')) {
+											feedback.textContent = '';
+											feedback.style.display = '';
+										}
+										return true;
+									}
+									wrap.classList.add('has-error');
+									setSpecialistSelectInvalid(select, true);
+									if (feedback) {
+										feedback.textContent = @json(__('main.Please select at least one specialty'));
+										feedback.style.display = 'block';
+									}
+									return false;
+								}
+
+								function initSubscriptionSpecialtySelect2() {
+									if (typeof jQuery === 'undefined') {
+										return;
+									}
+									var specialistWrap = form.querySelector('[data-validate-group="specialist"]');
+									var select = form.querySelector('#specialist-select');
+									if (!specialistWrap || !select) {
+										return;
+									}
+
+									function bootSelect2() {
+										var $select = jQuery(select);
+										if ($select.data('select2')) {
+											return;
+										}
+										$select.select2({
+											placeholder: select.getAttribute('data-placeholder') || '',
+											allowClear: true,
+											width: '100%',
+											dir: @json($subscriptionIsRtl ? 'rtl' : 'ltr'),
+											language: @json($subscriptionIsRtl ? 'ar' : 'en'),
+											closeOnSelect: false
+										});
+										$select.on('change.select2-specialist', function() {
+											validateSpecialistGroup(specialistWrap);
+										});
+									}
+
+									if (jQuery.fn.select2) {
+										bootSelect2();
+										return;
+									}
+
+									var script = document.createElement('script');
+									script.src = @json(asset('admin/js/select2/select2.full.min.js'));
+									script.onload = function() {
+										if (@json($subscriptionIsRtl)) {
+											var arScript = document.createElement('script');
+											arScript.src = @json(asset('build/plugins/select2/js/i18n/ar.js'));
+											arScript.onload = bootSelect2;
+											document.body.appendChild(arScript);
+											return;
+										}
+										bootSelect2();
+									};
+									document.body.appendChild(script);
+								}
+
 								function validateStep(idx) {
 									var fields = steps[idx].querySelectorAll('[data-validate]');
 									var valid = true;
@@ -1118,6 +1233,14 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 											valid = false;
 											if (!firstInvalid) {
 												firstInvalid = field
+											}
+										}
+									});
+									steps[idx].querySelectorAll('[data-validate-group="specialist"]').forEach(function(wrap) {
+										if (!validateSpecialistGroup(wrap)) {
+											valid = false;
+											if (!firstInvalid) {
+												firstInvalid = wrap.querySelector('#specialist-select') || wrap;
 											}
 										}
 									});
@@ -1154,6 +1277,8 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 										validateField(field)
 									});
 								});
+
+								window.addEventListener('load', initSubscriptionSpecialtySelect2);
 
 								btnNext.addEventListener('click', function() {
 									if (validateStep(current) && current < steps.length -
@@ -1194,14 +1319,18 @@ if (preg_match('/<li[^>]*>/i', $text)) {
 										if (wrap) {
 											wrap.classList.add('has-error')
 										}
-										var input = wrap ? wrap.querySelector(
-												'[name="' + el
-												.getAttribute(
-													'data-field-error'
-													) + '"]') :
-											null;
-										if (input) {
-											input.classList.add('is-invalid')
+										if (wrap && wrap.getAttribute('data-validate-group') === 'specialist') {
+											setSpecialistSelectInvalid(wrap.querySelector('#specialist-select'), true);
+										} else {
+											var input = wrap ? wrap.querySelector(
+													'[name="' + el
+													.getAttribute(
+														'data-field-error'
+														) + '"]') :
+												null;
+											if (input) {
+												input.classList.add('is-invalid')
+											}
 										}
 									}
 								});

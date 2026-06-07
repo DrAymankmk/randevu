@@ -16,6 +16,7 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 
 <head>
 	<meta charset="utf-8">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<title>Randevu</title>
 	<meta name="author" content="Randevu">
@@ -27,16 +28,11 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<!-- Favicons - Place favicon.ico in the root directory -->
-	<link rel="apple-touch-icon" sizes="57x57"
-		href=" {{ asset('frontend/assets/img/logo.png') }}">
-	<link rel="apple-touch-icon" sizes="60x60"
-		href=" {{ asset('frontend/assets/img/logo.png') }}">
-	<link rel="icon" type="image/png" sizes="192x192"
-		href=" {{ asset('frontend/assets/img/logo.png') }}">
-	<link rel="icon" type="image/png" sizes="32x32"
-		href=" {{ asset('frontend/assets/img/logo.png') }}">
-	<link rel="icon" type="image/png" sizes="16x16"
-		href=" {{ asset('frontend/assets/img/logo.png') }}">
+	<link rel="apple-touch-icon" sizes="57x57" href=" {{ asset('frontend/assets/img/logo.png') }}">
+	<link rel="apple-touch-icon" sizes="60x60" href=" {{ asset('frontend/assets/img/logo.png') }}">
+	<link rel="icon" type="image/png" sizes="192x192" href=" {{ asset('frontend/assets/img/logo.png') }}">
+	<link rel="icon" type="image/png" sizes="32x32" href=" {{ asset('frontend/assets/img/logo.png') }}">
+	<link rel="icon" type="image/png" sizes="16x16" href=" {{ asset('frontend/assets/img/logo.png') }}">
 	<meta name="theme-color" content="#ffffff">
 
 	<!--==============================
@@ -65,6 +61,8 @@ $isRtl = in_array($htmlLang, $rtlLangs, true);
 	@else
 	<link rel="stylesheet" href="{{ asset('frontend/assets/css/style.css') }}">
 	@endif
+
+	<link rel="stylesheet" href="{{ asset('frontend/assets/css/randevu-overrides.css') }}">
 
 </head>
 
